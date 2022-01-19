@@ -7,7 +7,7 @@ namespace MarketingBox.Postback.Service.Client
 {
     public static class AutofacHelper
     {
-        public static void RegisterAssetsDictionaryClient(this ContainerBuilder builder, string grpcServiceUrl)
+        public static void RegisterPostbackServiceClient(this ContainerBuilder builder, string grpcServiceUrl)
         {
             var factory = new PostbackServiceClientFactory(grpcServiceUrl);
 

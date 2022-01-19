@@ -5,13 +5,13 @@ namespace MarketingBox.Postback.Service.Settings
 {
     public class SettingsModel
     {
-        [YamlProperty("AssetsDictionary.SeqServiceUrl")]
+        [YamlProperty("PostbackService.SeqServiceUrl")]
         public string SeqServiceUrl { get; set; }
 
-        [YamlProperty("AssetsDictionary.ZipkinUrl")]
+        [YamlProperty("PostbackService.ZipkinUrl")]
         public string ZipkinUrl { get; set; }
 
-        [YamlProperty("AssetsDictionary.ElkLogs")]
+        [YamlProperty("PostbackService.ElkLogs")]
         public LogElkSettings ElkLogs { get; set; }
     }
 }

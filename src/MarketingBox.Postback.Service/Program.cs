@@ -14,7 +14,7 @@ namespace MarketingBox.Postback.Service
 {
     public class Program
     {
-        public const string SettingsFileName = ".myjetwallet";
+        public const string SettingsFileName = ".marketingboxpostbackservice";
 
         public static SettingsModel Settings { get; private set; }
 
