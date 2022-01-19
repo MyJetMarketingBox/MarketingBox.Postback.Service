@@ -4,7 +4,7 @@ using MarketingBox.Postback.Service.Domain.Models;
 namespace MarketingBox.Postback.Service.Grpc.Models
 {
     [DataContract]
-    public class ReferenceResponse : IReferenceResponse
+    public class ReferenceResponse
     {
         [DataMember(Order = 1)]
         public long AffiliateId { get; set; }
