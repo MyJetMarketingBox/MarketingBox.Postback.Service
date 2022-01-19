@@ -71,16 +71,21 @@ namespace MarketingBox.Postback.Service.Repositories
             try
             {
                 await using var context = _factory.Create();
-                await context.References.AddAsync(
-                        new Postgres.Entities.ReferenceEntity
-                        {
-                            AffiliateId = request.AffiliateId,
-                            CallType = request.CallType,
-                            DepositReference = request.DepositReference,
-                            DepositTGReference = request.DepositTGReference,
-                            RegistrationReference = request.RegistrationReference,
-                            RegistrationTGReference = request.RegistrationTGReference,
-                        });
+                var entityToUpdate = await context.References.FirstOrDefaultAsync(x => x.AffiliateId == request.AffiliateId);
+                if (entityToUpdate == null)
+                {
+
+                }
+                entityToUpdate = new Postgres.Entities.ReferenceEntity
+                {
+                    ReferenceId = entityToUpdate.ReferenceId,
+                    AffiliateId = request.AffiliateId,
+                    CallType = request.CallType,
+                    DepositReference = request.DepositReference,
+                    DepositTGReference = request.DepositTGReference,
+                    RegistrationReference = request.RegistrationReference,
+                    RegistrationTGReference = request.RegistrationTGReference,
+                };
                 await context.SaveChangesAsync();
                 return await GetReferenceAsync(request.AffiliateId);
             }
