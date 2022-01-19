@@ -5,16 +5,15 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Autofac;
-using MyJetWallet.Sdk.GrpcMetrics;
 using MyJetWallet.Sdk.GrpcSchema;
 using MyJetWallet.Sdk.Service;
 using Prometheus;
-using ProtoBuf.Grpc.Server;
 using MarketingBox.Postback.Service.Grpc;
 using MarketingBox.Postback.Service.Modules;
 using MarketingBox.Postback.Service.Services;
-using SimpleTrading.BaseMetrics;
 using SimpleTrading.ServiceStatusReporterConnector;
+using MarketingBox.Postback.Service.Postgres;
+using MyJetWallet.Sdk.Postgres;
 
 namespace MarketingBox.Postback.Service
 {
@@ -25,6 +24,11 @@ namespace MarketingBox.Postback.Service
             services.BindCodeFirstGrpc();
 
             services.AddHostedService<ApplicationLifetimeManager>();
+
+            MyDbContext.LoggerFactory = Program.LogFactory;
+            services.AddDatabase(DatabaseContext.Schema,
+                Program.Settings.PostgresConnectionString,
+                o => new DatabaseContext(o));
 
             services.AddMyTelemetry("SP-", Program.Settings.ZipkinUrl);
         }

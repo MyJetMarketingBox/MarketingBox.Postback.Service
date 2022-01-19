@@ -13,5 +13,8 @@ namespace MarketingBox.Postback.Service.Settings
 
         [YamlProperty("PostbackService.ElkLogs")]
         public LogElkSettings ElkLogs { get; set; }
+
+        [YamlProperty("PostbackService.PostgresConnectionString")]
+        public string PostgresConnectionString { get; set; }
     }
 }

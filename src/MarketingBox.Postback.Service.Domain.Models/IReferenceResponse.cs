@@ -6,7 +6,7 @@
         string RegistrationTGReference { get; set; }
         string DepositReference { get; set; }
         string DepositTGReference { get; set; }
-        int AffiliateId { get; set; }
-        CallTypeEnum CallType { get; set; }
+        long AffiliateId { get; set; }
+        CallType CallType { get; set; }
     }
 }

@@ -6,6 +6,6 @@ namespace MarketingBox.Postback.Service.Grpc.Models
     public class ReferenceByAffiliateRequest
     {
         [DataMember(Order = 1)]
-        public int AffiliateId { get; set; }
+        public long AffiliateId { get; set; }
     }
 }

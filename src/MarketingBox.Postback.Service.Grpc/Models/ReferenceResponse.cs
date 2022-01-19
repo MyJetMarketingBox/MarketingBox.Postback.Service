@@ -7,7 +7,7 @@ namespace MarketingBox.Postback.Service.Grpc.Models
     public class ReferenceResponse : IReferenceResponse
     {
         [DataMember(Order = 1)]
-        public int AffiliateId { get; set; }
+        public long AffiliateId { get; set; }
 
         [DataMember(Order = 2)]
         public string RegistrationReference { get; set; }
@@ -22,6 +22,6 @@ namespace MarketingBox.Postback.Service.Grpc.Models
         public string DepositTGReference { get; set; }
 
         [DataMember(Order = 6)]
-        public CallTypeEnum CallType { get; set; }
+        public CallType CallType { get; set; }
     }
 }

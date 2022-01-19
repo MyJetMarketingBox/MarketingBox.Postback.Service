@@ -1,6 +1,6 @@
 ﻿namespace MarketingBox.Postback.Service.Domain.Models
 {
-    public enum CallTypeEnum
+    public enum CallType
     {
         Get,
         Post
