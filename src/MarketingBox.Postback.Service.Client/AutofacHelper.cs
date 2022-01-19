@@ -11,7 +11,7 @@ namespace MarketingBox.Postback.Service.Client
         {
             var factory = new PostbackServiceClientFactory(grpcServiceUrl);
 
-            builder.RegisterInstance(factory.GetHelloService()).As<IHelloService>().SingleInstance();
+            builder.RegisterInstance(factory.GetHelloService()).As<IPostbackService>().SingleInstance();
         }
     }
 }

@@ -3,9 +3,9 @@ using System.Runtime.Serialization;
 namespace MarketingBox.Postback.Service.Grpc.Models
 {
     [DataContract]
-    public class HelloRequest
+    public class ReferenceByAffiliateRequest
     {
         [DataMember(Order = 1)]
-        public string Name { get; set; }
+        public int AffiliateId { get; set; }
     }
 }

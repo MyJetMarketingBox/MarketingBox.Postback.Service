@@ -19,8 +19,13 @@ namespace TestApp
             var factory = new PostbackServiceClientFactory("http://localhost:5001");
             var client = factory.GetHelloService();
 
-            var resp = await  client.SayHelloAsync(new HelloRequest(){Name = "Alex"});
-            Console.WriteLine(resp?.Message);
+            var resp = await  client.GetReferenceAsync(new ReferenceByAffiliateRequest(){AffiliateId = 1});
+            Console.WriteLine(resp?.AffiliateId);
+            Console.WriteLine(resp?.DepositReference);
+            Console.WriteLine(resp?.DepositTGReference);
+            Console.WriteLine(resp?.RegistrationReference);
+            Console.WriteLine(resp?.RegistrationTGReference);
+            Console.WriteLine(resp?.CallType);
 
             Console.WriteLine("End");
             Console.ReadLine();

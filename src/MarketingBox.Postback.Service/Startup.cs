@@ -46,7 +46,7 @@ namespace MarketingBox.Postback.Service
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGrpcSchema<HelloService, IHelloService>();
+                endpoints.MapGrpcSchema<PostbackService, IPostbackService>();
 
                 endpoints.MapGrpcSchemaRegistry();
 
