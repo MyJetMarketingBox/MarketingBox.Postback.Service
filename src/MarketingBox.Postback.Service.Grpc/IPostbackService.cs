@@ -8,17 +8,15 @@ namespace MarketingBox.Postback.Service.Grpc
     public interface IPostbackService
     {
         [OperationContract]
-        Task<ReferenceResponse> GetReferenceAsync(ReferenceByAffiliateRequest request);
+        Task<Response<ReferenceResponse>> GetReferenceAsync(ReferenceByAffiliateRequest request);
 
         [OperationContract]
-        Task<ReferenceResponse> SaveReferenceAsync(FullReferenceRequest request);
+        Task<Response<ReferenceResponse>> SaveReferenceAsync(FullReferenceRequest request);
 
         [OperationContract]
-        Task<ReferenceResponse> UpdateReferenceAsync(FullReferenceRequest request);
+        Task<Response<ReferenceResponse>> UpdateReferenceAsync(FullReferenceRequest request);
 
         [OperationContract]
-        Task DeleteReferenceAsync(ReferenceByAffiliateRequest request);
+        Task<Response<bool>> DeleteReferenceAsync(ReferenceByAffiliateRequest request);
     }
-
-    public record Request(string name,int age);
 }

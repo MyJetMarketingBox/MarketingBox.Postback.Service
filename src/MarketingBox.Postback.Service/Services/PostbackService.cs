@@ -2,44 +2,99 @@
 using Microsoft.Extensions.Logging;
 using MarketingBox.Postback.Service.Grpc;
 using MarketingBox.Postback.Service.Grpc.Models;
-using MarketingBox.Postback.Service.Repositories;
+using MarketingBox.Postback.Service.Domain.Models;
+using MarketingBox.Postback.Service.Domain;
+using AutoMapper;
+using System;
+using System.Text.Json;
 
 namespace MarketingBox.Postback.Service.Services
 {
-    public class PostbackService: IPostbackService
+    public class PostbackService : IPostbackService
     {
         private readonly ILogger<PostbackService> _logger;
         private readonly IReferenceRepository _referenceRepository;
+        private readonly IMapper _mapper;
 
         public PostbackService(ILogger<PostbackService> logger,
-            IReferenceRepository referenceRepository)
+            IReferenceRepository referenceRepository,
+            IMapper mapper)
         {
             _logger = logger;
             _referenceRepository = referenceRepository;
+            _mapper = mapper;
+        }
+        private static Response<T> FailedResponse<T>(string errorMessage)
+        {
+           return new Response<T> { Success = false, ErrorMessage = errorMessage };
         }
 
-        public async Task DeleteReferenceAsync(ReferenceByAffiliateRequest request)
+        public async Task<Response<bool>> DeleteReferenceAsync(ReferenceByAffiliateRequest request)
         {
-            _logger.LogInformation("Deleting reference entity for affiliate with id {id}", request.AffiliateId);
-            await _referenceRepository.DeleteReferenceAsync(request.AffiliateId);
+            try
+            {
+                _logger.LogInformation("Deleting reference entity for affiliate with id {AffiliateId}", request.AffiliateId);
+                await _referenceRepository.DeleteReferenceAsync(request.AffiliateId);
+                return new Response<bool> { Success = true, Data = true };
+            }
+            catch(Exception ex)
+            {
+                return FailedResponse<bool>(ex.Message);
+            }
         }
 
-        public async Task<ReferenceResponse> GetReferenceAsync(ReferenceByAffiliateRequest request)
+        public async Task<Response<ReferenceResponse>> GetReferenceAsync(ReferenceByAffiliateRequest request)
         {
-            _logger.LogInformation("Getting reference entity for affiliate with id {id}", request.AffiliateId);
-            return await _referenceRepository.GetReferenceAsync(request.AffiliateId);
+            try
+            {
+                _logger.LogInformation("Getting reference entity for affiliate with id {AffiliateId}", request.AffiliateId);
+                var res = await _referenceRepository.GetReferenceAsync(request.AffiliateId);
+                return new Response<ReferenceResponse>
+                {
+                    Success = true,
+                    Data = _mapper.Map<ReferenceResponse>(res)
+                };
+            }
+            catch(Exception ex)
+            {
+                return FailedResponse<ReferenceResponse>(ex.Message);
+            }
         }
 
-        public async Task<ReferenceResponse> SaveReferenceAsync(FullReferenceRequest request)
+        public async Task<Response<ReferenceResponse>> SaveReferenceAsync(FullReferenceRequest request)
         {
-            _logger.LogInformation("Saving reference entity for affiliate with id {id}", request);
-            return await _referenceRepository.SaveReferenceAsync(request);
+            try
+            {
+                _logger.LogInformation("Saving reference: {SaveReferenceRequest}", JsonSerializer.Serialize(request));
+                var res = await _referenceRepository.SaveReferenceAsync(_mapper.Map<Reference>(request));
+                return new Response<ReferenceResponse>
+                {
+                    Success = true, 
+                    Data = _mapper.Map<ReferenceResponse>(res)
+                };
+            }
+            catch(Exception ex)
+            {
+                return FailedResponse<ReferenceResponse>(ex.Message);
+            }
         }
 
-        public async Task<ReferenceResponse> UpdateReferenceAsync(FullReferenceRequest request)
+        public async Task<Response<ReferenceResponse>> UpdateReferenceAsync(FullReferenceRequest request)
         {
-            _logger.LogInformation("Updating reference entity for affiliate with id {id}", request.AffiliateId);
-            return await _referenceRepository.UpdateReferenceAsync(request);
+            try
+            {
+                _logger.LogInformation("Updating reference: {UpdateReferenceRequest}", JsonSerializer.Serialize(request));
+                var res = await _referenceRepository.SaveReferenceAsync(_mapper.Map<Reference>(request));
+                return new Response<ReferenceResponse>
+                {
+                    Success = true,
+                    Data = _mapper.Map<ReferenceResponse>(res)
+                };
+            }
+            catch(Exception ex)
+            {
+                return FailedResponse<ReferenceResponse>(ex.Message);
+            }
         }
     }
 }

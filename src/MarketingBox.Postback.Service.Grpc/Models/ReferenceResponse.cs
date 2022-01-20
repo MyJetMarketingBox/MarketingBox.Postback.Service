@@ -1,9 +1,8 @@
+﻿using MarketingBox.Postback.Service.Domain.Models;
 using System.Runtime.Serialization;
-using MarketingBox.Postback.Service.Domain.Models;
 
 namespace MarketingBox.Postback.Service.Grpc.Models
 {
-    [DataContract]
     public class ReferenceResponse
     {
         [DataMember(Order = 1)]
@@ -22,6 +21,6 @@ namespace MarketingBox.Postback.Service.Grpc.Models
         public string DepositTGReference { get; set; }
 
         [DataMember(Order = 6)]
-        public CallType CallType { get; set; }
+        public HttpQueryType HttpQueryType { get; set; }
     }
 }

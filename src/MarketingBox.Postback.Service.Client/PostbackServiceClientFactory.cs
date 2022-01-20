@@ -11,6 +11,6 @@ namespace MarketingBox.Postback.Service.Client
         {
         }
 
-        public IPostbackService GetHelloService() => CreateGrpcService<IPostbackService>();
+        public IPostbackService GetPostbackService() => CreateGrpcService<IPostbackService>();
     }
 }

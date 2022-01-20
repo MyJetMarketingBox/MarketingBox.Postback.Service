@@ -1,6 +1,7 @@
 ﻿using Autofac;
-using Autofac.Core;
-using Autofac.Core.Registration;
+using MarketingBox.Postback.Service.Domain;
+using MarketingBox.Postback.Service.Postgres;
+using MarketingBox.Postback.Service.Repositories;
 
 namespace MarketingBox.Postback.Service.Modules
 {
@@ -8,7 +9,16 @@ namespace MarketingBox.Postback.Service.Modules
     {
         protected override void Load(ContainerBuilder builder)
         {
-            
+            builder
+                .RegisterType<ReferenceRepository>()
+                .As<IReferenceRepository>()
+                .AutoActivate()
+                .SingleInstance();
+
+            builder
+                .RegisterType<DatabaseContextFactory>()
+                .AsSelf()
+                .SingleInstance();
         }
     }
 }

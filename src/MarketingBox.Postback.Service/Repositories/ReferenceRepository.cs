@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
-using MarketingBox.Postback.Service.Grpc.Models;
+using MarketingBox.Postback.Service.Domain;
+using MarketingBox.Postback.Service.Domain.Exceptions;
+using MarketingBox.Postback.Service.Domain.Models;
 using MarketingBox.Postback.Service.Postgres;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -27,27 +29,34 @@ namespace MarketingBox.Postback.Service.Repositories
             {
                 await using var context = _factory.Create();
                 var entityToDelete = await context.References.FirstOrDefaultAsync(x => x.AffiliateId == AffiliateId);
-                
+
                 if (entityToDelete is null)
-                { }
-                
+                {
+                    throw new NotFoundException(nameof(AffiliateId), AffiliateId);
+                }
+
                 context.References.Remove(entityToDelete);
-                
+
                 await context.SaveChangesAsync();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
-                throw;
+                var message = "Exception occured while deleting reference.";
+                _logger.LogError(ex, message);
+                if (ex is NotFoundException)
+                {
+                    throw;
+                }
+                throw new InternalException(message, ex);
             }
         }
 
-        public async Task<ReferenceResponse> SaveReferenceAsync(FullReferenceRequest request)
+        public async Task<Reference> SaveReferenceAsync(Reference request)
         {
             try
             {
                 await using var context = _factory.Create();
-                await context.References.AddAsync(
+                context.References.Upsert(
                         new Postgres.Entities.ReferenceEntity
                         {
                             AffiliateId = request.AffiliateId,
@@ -58,29 +67,31 @@ namespace MarketingBox.Postback.Service.Repositories
                             RegistrationTGReference = request.RegistrationTGReference,
                         });
                 await context.SaveChangesAsync();
-                
+
                 return await GetReferenceAsync(request.AffiliateId);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
-                throw;
+                var message = "Exception occured while saving reference.";
+                _logger.LogError(ex, message);
+                throw new InternalException(message, ex);
             }
         }
 
-        public async Task<ReferenceResponse> UpdateReferenceAsync(FullReferenceRequest request)
+        public async Task<Reference> UpdateReferenceAsync(Reference request)
         {
             try
             {
                 await using var context = _factory.Create();
                 var entityToUpdate = await context.References.FirstOrDefaultAsync(x => x.AffiliateId == request.AffiliateId);
-                
+
                 if (entityToUpdate == null)
-                { }
+                {
+                    throw new NotFoundException(nameof(request.AffiliateId), request.AffiliateId);
+                }
 
                 entityToUpdate = new Postgres.Entities.ReferenceEntity
                 {
-                    ReferenceId = entityToUpdate.ReferenceId,
                     AffiliateId = request.AffiliateId,
                     CallType = request.CallType,
                     DepositReference = request.DepositReference,
@@ -92,14 +103,19 @@ namespace MarketingBox.Postback.Service.Repositories
 
                 return await GetReferenceAsync(request.AffiliateId);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
-                throw;
+                var message = "Exception occured while updating reference.";
+                _logger.LogError(ex, message);
+                if (ex is NotFoundException)
+                {
+                    throw;
+                }
+                throw new InternalException(message, ex);
             }
         }
 
-        public async Task<ReferenceResponse> GetReferenceAsync(long AffiliateId)
+        public async Task<Reference> GetReferenceAsync(long AffiliateId)
         {
             try
             {
@@ -107,22 +123,21 @@ namespace MarketingBox.Postback.Service.Repositories
                 var result = await context.References.FirstOrDefaultAsync(x => x.AffiliateId == AffiliateId);
 
                 if (result is null)
-                { }
-
-                return new ReferenceResponse
                 {
-                    AffiliateId = result.AffiliateId,
-                    CallType = result.CallType,
-                    DepositReference = result.DepositReference,
-                    DepositTGReference = result.DepositTGReference,
-                    RegistrationReference = result.RegistrationReference,
-                    RegistrationTGReference = result.RegistrationTGReference,
-                };
-            }
-            catch (Exception)
-            {
+                    throw new NotFoundException(nameof(AffiliateId), AffiliateId);
+                }
 
-                throw;
+                return result;
+            }
+            catch (Exception ex)
+            {
+                var message = "Exception occured while getting reference.";
+                _logger.LogError(ex, message);
+                if (ex is NotFoundException)
+                {
+                    throw;
+                }
+                throw new InternalException(message, ex);
             }
         }
     }

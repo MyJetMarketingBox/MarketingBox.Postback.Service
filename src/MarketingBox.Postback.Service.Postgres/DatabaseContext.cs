@@ -36,7 +36,7 @@ namespace MarketingBox.Postback.Service.Postgres
         private void SetReferenceEntity(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<ReferenceEntity>().ToTable(ReferenceTableName);
-            modelBuilder.Entity<ReferenceEntity>().HasKey(e => e.ReferenceId);
+            modelBuilder.Entity<ReferenceEntity>().HasKey(e => e.Id);
             modelBuilder.Entity<ReferenceEntity>().HasIndex(e => e.AffiliateId).IsUnique();
         }
     }
