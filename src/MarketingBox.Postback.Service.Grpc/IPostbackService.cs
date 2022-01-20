@@ -19,4 +19,6 @@ namespace MarketingBox.Postback.Service.Grpc
         [OperationContract]
         Task DeleteReferenceAsync(ReferenceByAffiliateRequest request);
     }
+
+    public record Request(string name,int age);
 }

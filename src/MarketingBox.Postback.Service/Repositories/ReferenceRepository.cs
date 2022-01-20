@@ -27,11 +27,12 @@ namespace MarketingBox.Postback.Service.Repositories
             {
                 await using var context = _factory.Create();
                 var entityToDelete = await context.References.FirstOrDefaultAsync(x => x.AffiliateId == AffiliateId);
+                
                 if (entityToDelete is null)
-                {
-
-                }
+                { }
+                
                 context.References.Remove(entityToDelete);
+                
                 await context.SaveChangesAsync();
             }
             catch (Exception)
@@ -57,6 +58,7 @@ namespace MarketingBox.Postback.Service.Repositories
                             RegistrationTGReference = request.RegistrationTGReference,
                         });
                 await context.SaveChangesAsync();
+                
                 return await GetReferenceAsync(request.AffiliateId);
             }
             catch (Exception)
@@ -72,10 +74,10 @@ namespace MarketingBox.Postback.Service.Repositories
             {
                 await using var context = _factory.Create();
                 var entityToUpdate = await context.References.FirstOrDefaultAsync(x => x.AffiliateId == request.AffiliateId);
+                
                 if (entityToUpdate == null)
-                {
+                { }
 
-                }
                 entityToUpdate = new Postgres.Entities.ReferenceEntity
                 {
                     ReferenceId = entityToUpdate.ReferenceId,
@@ -87,6 +89,7 @@ namespace MarketingBox.Postback.Service.Repositories
                     RegistrationTGReference = request.RegistrationTGReference,
                 };
                 await context.SaveChangesAsync();
+
                 return await GetReferenceAsync(request.AffiliateId);
             }
             catch (Exception)
