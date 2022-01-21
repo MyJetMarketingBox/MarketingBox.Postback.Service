@@ -61,12 +61,12 @@ namespace MarketingBox.Postback.Service.Services
             }
         }
 
-        public async Task<Response<ReferenceResponse>> SaveReferenceAsync(FullReferenceRequest request)
+        public async Task<Response<ReferenceResponse>> CreateReferenceAsync(FullReferenceRequest request)
         {
             try
             {
                 _logger.LogInformation("Saving reference: {SaveReferenceRequest}", JsonSerializer.Serialize(request));
-                var res = await _referenceRepository.SaveReferenceAsync(_mapper.Map<Reference>(request));
+                var res = await _referenceRepository.CreateReferenceAsync(_mapper.Map<Reference>(request));
                 return new Response<ReferenceResponse>
                 {
                     Success = true, 
@@ -84,7 +84,7 @@ namespace MarketingBox.Postback.Service.Services
             try
             {
                 _logger.LogInformation("Updating reference: {UpdateReferenceRequest}", JsonSerializer.Serialize(request));
-                var res = await _referenceRepository.SaveReferenceAsync(_mapper.Map<Reference>(request));
+                var res = await _referenceRepository.UpdateReferenceAsync(_mapper.Map<Reference>(request));
                 return new Response<ReferenceResponse>
                 {
                     Success = true,

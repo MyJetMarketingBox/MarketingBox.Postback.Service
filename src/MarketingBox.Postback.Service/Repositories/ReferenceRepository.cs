@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Text.Json;
 using System.Threading.Tasks;
+using AutoMapper;
 using MarketingBox.Postback.Service.Domain;
 using MarketingBox.Postback.Service.Domain.Exceptions;
 using MarketingBox.Postback.Service.Domain.Models;
 using MarketingBox.Postback.Service.Postgres;
+using MarketingBox.Postback.Service.Postgres.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -13,14 +16,17 @@ namespace MarketingBox.Postback.Service.Repositories
     public class ReferenceRepository : IReferenceRepository
     {
         private readonly ILogger<ReferenceRepository> _logger;
+        private readonly IMapper _mapper;
         private readonly DatabaseContextFactory _factory;
 
         public ReferenceRepository(
             ILogger<ReferenceRepository> logger,
+            IMapper mapper,
             DatabaseContextFactory factory)
         {
             _logger = logger;
-            this._factory = factory;
+            _mapper = mapper;
+            _factory = factory;
         }
 
         public async Task DeleteReferenceAsync(long AffiliateId)
@@ -41,40 +47,39 @@ namespace MarketingBox.Postback.Service.Repositories
             }
             catch (Exception ex)
             {
-                var message = "Exception occured while deleting reference.";
-                _logger.LogError(ex, message);
-                if (ex is NotFoundException)
-                {
-                    throw;
-                }
-                throw new InternalException(message, ex);
+                _logger.LogError(
+                    ex,
+                    "Exception occured while deleting reference. AffiliateId: {AffiliateId}.",
+                    AffiliateId);
+                throw;
             }
         }
 
-        public async Task<Reference> SaveReferenceAsync(Reference request)
+        public async Task<Reference> CreateReferenceAsync(Reference request)
         {
             try
             {
                 await using var context = _factory.Create();
-                context.References.Upsert(
-                        new Postgres.Entities.ReferenceEntity
-                        {
-                            AffiliateId = request.AffiliateId,
-                            CallType = request.CallType,
-                            DepositReference = request.DepositReference,
-                            DepositTGReference = request.DepositTGReference,
-                            RegistrationReference = request.RegistrationReference,
-                            RegistrationTGReference = request.RegistrationTGReference,
-                        });
+
+                var entityToCreate = _mapper.Map<ReferenceEntity>(request);
+                var affiliateInDb = await context.References.FirstOrDefaultAsync(x => x.AffiliateId == request.AffiliateId);
+
+                if (affiliateInDb != null)
+                {
+                    throw new AlreadyExistsException(nameof(request.AffiliateId), request.AffiliateId);
+                }
+                await context.References.AddAsync(entityToCreate);
                 await context.SaveChangesAsync();
 
                 return await GetReferenceAsync(request.AffiliateId);
             }
             catch (Exception ex)
             {
-                var message = "Exception occured while saving reference.";
-                _logger.LogError(ex, message);
-                throw new InternalException(message, ex);
+                _logger.LogError(
+                    ex,
+                    "Exception occured while saving reference. Request: {CreateReferenceRequest}.",
+                    JsonSerializer.Serialize(request));
+                throw;
             }
         }
 
@@ -90,28 +95,23 @@ namespace MarketingBox.Postback.Service.Repositories
                     throw new NotFoundException(nameof(request.AffiliateId), request.AffiliateId);
                 }
 
-                entityToUpdate = new Postgres.Entities.ReferenceEntity
-                {
-                    AffiliateId = request.AffiliateId,
-                    CallType = request.CallType,
-                    DepositReference = request.DepositReference,
-                    DepositTGReference = request.DepositTGReference,
-                    RegistrationReference = request.RegistrationReference,
-                    RegistrationTGReference = request.RegistrationTGReference,
-                };
+                entityToUpdate.DepositReference = request.DepositReference;
+                entityToUpdate.DepositTGReference = request.DepositTGReference;
+                entityToUpdate.RegistrationReference = request.RegistrationReference;
+                entityToUpdate.RegistrationTGReference = request.RegistrationTGReference;
+                entityToUpdate.HttpQueryType = request.HttpQueryType;
+
                 await context.SaveChangesAsync();
 
                 return await GetReferenceAsync(request.AffiliateId);
             }
             catch (Exception ex)
             {
-                var message = "Exception occured while updating reference.";
-                _logger.LogError(ex, message);
-                if (ex is NotFoundException)
-                {
-                    throw;
-                }
-                throw new InternalException(message, ex);
+                _logger.LogError(
+                    ex,
+                    "Exception occured while updating reference. Request: {CreateReferenceRequest}.",
+                    JsonSerializer.Serialize(request));
+                throw;
             }
         }
 
@@ -131,13 +131,11 @@ namespace MarketingBox.Postback.Service.Repositories
             }
             catch (Exception ex)
             {
-                var message = "Exception occured while getting reference.";
-                _logger.LogError(ex, message);
-                if (ex is NotFoundException)
-                {
-                    throw;
-                }
-                throw new InternalException(message, ex);
+                _logger.LogError(
+                    ex,
+                    "Exception occured while getting reference. AffiliateId: {AffiliateId}.",
+                    AffiliateId);
+                throw;
             }
         }
     }

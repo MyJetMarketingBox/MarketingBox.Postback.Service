@@ -12,6 +12,6 @@
 
         public string DepositTGReference { get; set; }
 
-        public HttpQueryType CallType { get; set; }
+        public HttpQueryType HttpQueryType { get; set; }
     }
 }

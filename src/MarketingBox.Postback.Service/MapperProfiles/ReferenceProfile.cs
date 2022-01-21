@@ -9,6 +9,7 @@ namespace MarketingBox.Postback.Service.MapperProfiles
         public ReferenceProfile()
         {
             CreateMap<Reference, ReferenceResponse>();
+            CreateMap<FullReferenceRequest, Reference>();
         }
     }
 }

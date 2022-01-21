@@ -11,7 +11,7 @@ namespace MarketingBox.Postback.Service.Grpc
         Task<Response<ReferenceResponse>> GetReferenceAsync(ReferenceByAffiliateRequest request);
 
         [OperationContract]
-        Task<Response<ReferenceResponse>> SaveReferenceAsync(FullReferenceRequest request);
+        Task<Response<ReferenceResponse>> CreateReferenceAsync(FullReferenceRequest request);
 
         [OperationContract]
         Task<Response<ReferenceResponse>> UpdateReferenceAsync(FullReferenceRequest request);

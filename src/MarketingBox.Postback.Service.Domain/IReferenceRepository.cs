@@ -7,7 +7,7 @@ namespace MarketingBox.Postback.Service.Domain
     {
         Task DeleteReferenceAsync(long AffiliateId);
         Task<Reference> GetReferenceAsync(long AffiliateId);
-        Task<Reference> SaveReferenceAsync(Reference request);
+        Task<Reference> CreateReferenceAsync(Reference request);
         Task<Reference> UpdateReferenceAsync(Reference request);
     }
 }

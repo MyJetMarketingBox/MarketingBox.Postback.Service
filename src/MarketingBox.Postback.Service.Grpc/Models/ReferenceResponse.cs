@@ -3,6 +3,7 @@ using System.Runtime.Serialization;
 
 namespace MarketingBox.Postback.Service.Grpc.Models
 {
+    [DataContract]
     public class ReferenceResponse
     {
         [DataMember(Order = 1)]

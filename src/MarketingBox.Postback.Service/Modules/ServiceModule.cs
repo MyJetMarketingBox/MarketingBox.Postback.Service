@@ -12,7 +12,6 @@ namespace MarketingBox.Postback.Service.Modules
             builder
                 .RegisterType<ReferenceRepository>()
                 .As<IReferenceRepository>()
-                .AutoActivate()
                 .SingleInstance();
 
             builder

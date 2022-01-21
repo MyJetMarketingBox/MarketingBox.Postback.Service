@@ -22,6 +22,6 @@ namespace MarketingBox.Postback.Service.Grpc.Models
         public string DepositTGReference { get; set; }
 
         [DataMember(Order = 6)]
-        public HttpQueryType CallType { get; set; }
+        public HttpQueryType HttpQueryType { get; set; }
     }
 }
