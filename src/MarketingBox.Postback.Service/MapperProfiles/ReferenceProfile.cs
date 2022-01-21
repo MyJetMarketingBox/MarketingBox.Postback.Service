@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MarketingBox.Postback.Service.Domain.Models;
 using MarketingBox.Postback.Service.Grpc.Models;
+using MarketingBox.Postback.Service.Postgres.Entities;
 
 namespace MarketingBox.Postback.Service.MapperProfiles
 {
@@ -9,6 +10,7 @@ namespace MarketingBox.Postback.Service.MapperProfiles
         public ReferenceProfile()
         {
             CreateMap<Reference, ReferenceResponse>();
+            CreateMap<Reference, ReferenceEntity>();
             CreateMap<FullReferenceRequest, Reference>();
         }
     }
