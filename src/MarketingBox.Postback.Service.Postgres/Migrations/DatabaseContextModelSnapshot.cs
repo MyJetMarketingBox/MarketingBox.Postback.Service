@@ -24,11 +24,11 @@ namespace MarketingBox.Postback.Service.Postgres.Migrations
 
             modelBuilder.Entity("MarketingBox.Postback.Service.Postgres.Entities.ReferenceEntity", b =>
                 {
-                    b.Property<long>("ReferenceId")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("ReferenceId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<long>("AffiliateId")
                         .HasColumnType("bigint");
@@ -48,7 +48,7 @@ namespace MarketingBox.Postback.Service.Postgres.Migrations
                     b.Property<string>("RegistrationTGReference")
                         .HasColumnType("text");
 
-                    b.HasKey("ReferenceId");
+                    b.HasKey("Id");
 
                     b.HasIndex("AffiliateId")
                         .IsUnique();

@@ -5,7 +5,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace MarketingBox.Postback.Service.Postgres.Migrations
 {
-    public partial class Init : Migration
+    public partial class Migration1 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -17,7 +17,7 @@ namespace MarketingBox.Postback.Service.Postgres.Migrations
                 schema: "postback-service",
                 columns: table => new
                 {
-                    ReferenceId = table.Column<long>(type: "bigint", nullable: false)
+                    Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     AffiliateId = table.Column<long>(type: "bigint", nullable: false),
                     RegistrationReference = table.Column<string>(type: "text", nullable: true),
@@ -28,7 +28,7 @@ namespace MarketingBox.Postback.Service.Postgres.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_reference", x => x.ReferenceId);
+                    table.PrimaryKey("PK_reference", x => x.Id);
                 });
 
             migrationBuilder.CreateIndex(

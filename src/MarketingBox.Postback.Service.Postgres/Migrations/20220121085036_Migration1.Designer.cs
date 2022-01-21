@@ -11,8 +11,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MarketingBox.Postback.Service.Postgres.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20220119165329_Init")]
-    partial class Init
+    [Migration("20220121085036_Migration1")]
+    partial class Migration1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -26,11 +26,11 @@ namespace MarketingBox.Postback.Service.Postgres.Migrations
 
             modelBuilder.Entity("MarketingBox.Postback.Service.Postgres.Entities.ReferenceEntity", b =>
                 {
-                    b.Property<long>("ReferenceId")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("ReferenceId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<long>("AffiliateId")
                         .HasColumnType("bigint");
@@ -50,7 +50,7 @@ namespace MarketingBox.Postback.Service.Postgres.Migrations
                     b.Property<string>("RegistrationTGReference")
                         .HasColumnType("text");
 
-                    b.HasKey("ReferenceId");
+                    b.HasKey("Id");
 
                     b.HasIndex("AffiliateId")
                         .IsUnique();
