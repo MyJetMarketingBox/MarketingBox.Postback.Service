@@ -24,12 +24,12 @@
     <TargetsForTfmSpecificBuildOutput>
       $(TargetsForTfmSpecificBuildOutput);PackReferencedProjectOutputs
     </TargetsForTfmSpecificBuildOutput>
-    <PackageId>MyJetWallet.MarketingBox.Postback.Service.Client</PackageId>
-    <Authors>MyJetWallet</Authors>
-    <Company>MyJetWallet</Company>
-    <Product>MyJetWallet</Product>
-    <PackageProjectUrl>https://github.com/MyJetWallet/MarketingBox.Postback.Service</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/MyJetWallet/MarketingBox.Postback.Service</RepositoryUrl>
+    <PackageId>MarketingBox.Postback.Service.Client</PackageId>
+    <Authors>MyJetMarketingBox</Authors>
+    <Company>MyJetMarketingBox</Company>
+    <Product>MyJetMarketingBox</Product>
+    <PackageProjectUrl>https://github.com/MyJetMarketingBox/MarketingBox.Postback.Service</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/MyJetMarketingBox/MarketingBox.Postback.Service</RepositoryUrl>
   </PropertyGroup>
 
   <Target Name="PackReferencedProjectOutputs" DependsOnTargets="BuildOnlySettings;ResolveReferences">
