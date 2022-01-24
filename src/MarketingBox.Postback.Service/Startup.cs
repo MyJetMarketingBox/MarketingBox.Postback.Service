@@ -65,6 +65,7 @@ namespace MarketingBox.Postback.Service
 
         public void ConfigureContainer(ContainerBuilder builder)
         {
+            builder.RegisterModule<ClientModule>();
             builder.RegisterModule<SettingsModule>();
             builder.RegisterModule<ServiceModule>();
         }

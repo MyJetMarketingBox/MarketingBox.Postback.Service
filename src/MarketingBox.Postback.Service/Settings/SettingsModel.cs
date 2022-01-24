@@ -16,5 +16,8 @@ namespace MarketingBox.Postback.Service.Settings
 
         [YamlProperty("PostbackService.PostgresConnectionString")]
         public string PostgresConnectionString { get; set; }
+
+        [YamlProperty("PostbackService.MarketingBoxServiceBusHostPort")]
+        public string MarketingBoxServiceBusHostPort { get; set; }
     }
 }
