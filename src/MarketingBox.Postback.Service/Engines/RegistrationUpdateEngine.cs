@@ -1,13 +1,14 @@
 ﻿using MarketingBox.Postback.Service.Domain;
 using MarketingBox.Postback.Service.Domain.Models;
 using MarketingBox.Postback.Service.Helper;
-using MarketingBox.Registration.Service.Messages.Registrations;
+using MarketingBox.Registration.Service.Domain.Registrations;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using RegistrationAdditionalInfo = MarketingBox.Registration.Service.Messages.Registrations.RegistrationAdditionalInfo;
 
 namespace MarketingBox.Postback.Service.Engines
 {
@@ -24,22 +25,37 @@ namespace MarketingBox.Postback.Service.Engines
             _repository = repository;
         }
 
-        public async Task HandleRegistration(long affiliateId, RegistrationAdditionalInfo additionalInfo)
+        public async Task HandleRegistration(
+            long affiliateId,
+            RegistrationStatus status,
+            RegistrationAdditionalInfo additionalInfo)
         {
             try
             {
-                var reference = await _repository.GetReferenceAsync(affiliateId);
-                HttpResponseMessage registrationResponse = null;
+                HttpResponseMessage postbackResponse = null;
+                string reference = string.Empty;
 
-                switch (reference.HttpQueryType)
+                var referenceEntity = await _repository.GetReferenceAsync(affiliateId);
+                
+                switch (status)
+                {
+                    case RegistrationStatus.Registered:
+                        reference = referenceEntity.RegistrationReference;
+                        break;
+                    case RegistrationStatus.Deposited:
+                        reference = referenceEntity.DepositReference;
+                        break;
+                }
+
+                switch (referenceEntity.HttpQueryType)
                 {
                     case HttpQueryType.Get:
                         {
                             var registrationReference = 
-                                reference.RegistrationReference.ConfigureReference(additionalInfo);
+                                reference.ConfigureReference(additionalInfo);
 
                             using var client = new HttpClient();
-                            registrationResponse = await client.GetAsync(registrationReference);
+                            postbackResponse = await client.GetAsync(registrationReference);
                             break;
                         }
                     case HttpQueryType.Post:
@@ -48,12 +64,13 @@ namespace MarketingBox.Postback.Service.Engines
                             var data = new StringContent(json, Encoding.UTF8, "application/json");
                             
                             using var client = new HttpClient();
-                            registrationResponse = await client.PostAsync(
-                                reference.RegistrationReference,
+                            postbackResponse = await client.PostAsync(
+                                reference,
                                 data);
                             break;
                         }
                 }
+                // telegram.Handle();
             }
             catch(Exception ex)
             {
