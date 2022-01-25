@@ -29,6 +29,7 @@ namespace MarketingBox.Postback.Service
         protected override void OnStopping()
         {
             _logger.LogInformation("OnStopping has been called.");
+            _myServiceBusTcpClient.Stop();
         }
 
         protected override void OnStopped()

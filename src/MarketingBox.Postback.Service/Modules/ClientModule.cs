@@ -21,14 +21,6 @@ namespace MarketingBox.Postback.Service.Modules
                 Topics.RegistrationUpdateTopic,
                 "MarketingBox-Postback-Service",
                 TopicQueueType.PermanentWithSingleConnection);
-
-            builder.RegisterType<RegistrationUpdateMessageSubscriber>()
-                .SingleInstance()
-                .AutoActivate();
-
-            builder.RegisterType<RegistrationUpdateEngine>()
-                .As<IRegistrationUpdateEngine>()
-                .SingleInstance();
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using DotNetCoreDecorators;
+﻿using Autofac;
+using DotNetCoreDecorators;
 using MarketingBox.Postback.Service.Engines;
 using MarketingBox.Registration.Service.Messages.Registrations;
 using Microsoft.Extensions.Logging;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MarketingBox.Postback.Service.Subscribers
 {
-    public class RegistrationUpdateMessageSubscriber
+    public class RegistrationUpdateMessageSubscriber : IStartable
     {
         private readonly IRegistrationUpdateEngine _registrationUpdateEngine;
         private readonly ILogger<RegistrationUpdateMessageSubscriber> _logger;
@@ -20,6 +21,10 @@ namespace MarketingBox.Postback.Service.Subscribers
             _registrationUpdateEngine = registrationUpdateEngine;
             _logger = logger;
             subscriber.Subscribe(HandleRegistrationEvent);
+        }
+
+        public void Start()
+        {
         }
 
         private async ValueTask HandleRegistrationEvent(RegistrationUpdateMessage message)
