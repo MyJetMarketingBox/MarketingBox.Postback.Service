@@ -1,6 +1,4 @@
 ﻿using Autofac;
-using MarketingBox.Postback.Service.Engines;
-using MarketingBox.Postback.Service.Subscribers;
 using MarketingBox.Registration.Service.Messages;
 using MarketingBox.Registration.Service.Messages.Registrations;
 using MyJetWallet.Sdk.ServiceBus;

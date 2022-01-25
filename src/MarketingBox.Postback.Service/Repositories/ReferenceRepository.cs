@@ -13,20 +13,16 @@ using Microsoft.Extensions.Logging;
 
 namespace MarketingBox.Postback.Service.Repositories
 {
-    public class ReferenceRepository : IReferenceRepository
+    public class ReferenceRepository : RepositoryBase<ReferenceRepository>, IReferenceRepository
     {
-        private readonly ILogger<ReferenceRepository> _logger;
         private readonly IMapper _mapper;
-        private readonly DatabaseContextFactory _factory;
 
         public ReferenceRepository(
             ILogger<ReferenceRepository> logger,
             IMapper mapper,
-            DatabaseContextFactory factory)
+            DatabaseContextFactory factory) : base(logger,factory)
         {
-            _logger = logger;
             _mapper = mapper;
-            _factory = factory;
         }
 
         public async Task DeleteReferenceAsync(long AffiliateId)

@@ -16,13 +16,16 @@ namespace MarketingBox.Postback.Service.Engines
     {
         private readonly ILogger<RegistrationUpdateEngine> _logger;
         private readonly IReferenceRepository _repository;
+        private readonly IEventReferenceLoggerRepository _eventReferenceLogger;
 
         public RegistrationUpdateEngine(
             ILogger<RegistrationUpdateEngine> logger,
-            IReferenceRepository repository)
+            IReferenceRepository repository,
+            IEventReferenceLoggerRepository eventReferenceLogger)
         {
             _logger = logger;
             _repository = repository;
+            _eventReferenceLogger = eventReferenceLogger;
         }
 
         public async Task HandleRegistration(
@@ -36,16 +39,21 @@ namespace MarketingBox.Postback.Service.Engines
                 string reference = string.Empty;
 
                 var referenceEntity = await _repository.GetReferenceAsync(affiliateId);
-                
+                var log = new EventReferenceLog();
+
+
                 switch (status)
                 {
                     case RegistrationStatus.Registered:
                         reference = referenceEntity.RegistrationReference;
+                        log.EventStatus = Status.Registered;
                         break;
                     case RegistrationStatus.Deposited:
                         reference = referenceEntity.DepositReference;
+                        log.EventStatus = Status.Deposited;
                         break;
                 }
+
 
                 switch (referenceEntity.HttpQueryType)
                 {
@@ -70,6 +78,13 @@ namespace MarketingBox.Postback.Service.Engines
                             break;
                         }
                 }
+
+                log.PostbackReference = reference;
+                log.PostbackResult = JsonConvert.SerializeObject(postbackResponse);
+                log.HttpQueryType = referenceEntity.HttpQueryType;
+                log.Date = DateTime.UtcNow;
+
+                await _eventReferenceLogger.CreateLogAsync(log);
                 // telegram.Handle();
             }
             catch(Exception ex)

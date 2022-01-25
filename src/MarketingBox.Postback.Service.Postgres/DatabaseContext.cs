@@ -9,8 +9,12 @@ namespace MarketingBox.Postback.Service.Postgres
         public const string Schema = "postback-service";
 
         private const string ReferenceTableName = "reference";
+        private const string AffiliateReferenceLogTableName = "affiliatereferencelog";
+        private const string EventReferenceLogTableName = "eventreferencelog";
 
         public DbSet<ReferenceEntity> References { get; set; }
+        public DbSet<AffiliateReferenceLogEntity> AffiliateReferenceLogs { get; set; }
+        public DbSet<EventReferenceLogEntity> EventReferenceLogs { get; set; }
         
         public DatabaseContext(DbContextOptions options) : base(options)
         {
@@ -29,15 +33,33 @@ namespace MarketingBox.Postback.Service.Postgres
             modelBuilder.HasDefaultSchema(Schema);
 
             SetReferenceEntity(modelBuilder);
+            SetAffiliateReferenceLogEntity(modelBuilder);
+            SetEventReferenceLogEntity(modelBuilder);
 
             base.OnModelCreating(modelBuilder);
         }
 
-        private void SetReferenceEntity(ModelBuilder modelBuilder)
+        private static void SetReferenceEntity(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<ReferenceEntity>().ToTable(ReferenceTableName);
             modelBuilder.Entity<ReferenceEntity>().HasKey(e => e.Id);
             modelBuilder.Entity<ReferenceEntity>().HasIndex(e => e.AffiliateId).IsUnique();
+        }
+        private static void SetAffiliateReferenceLogEntity(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<AffiliateReferenceLogEntity>().ToTable(AffiliateReferenceLogTableName);
+            modelBuilder.Entity<AffiliateReferenceLogEntity>().HasKey(e => e.Id);
+            modelBuilder.Entity<AffiliateReferenceLogEntity>().HasIndex(e => e.AffiliateId);
+            modelBuilder.Entity<AffiliateReferenceLogEntity>().HasIndex(e => e.Operation);
+            modelBuilder.Entity<AffiliateReferenceLogEntity>().HasIndex(e => e.Date);
+        }
+        private static void SetEventReferenceLogEntity(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<EventReferenceLogEntity>().ToTable(EventReferenceLogTableName);
+            modelBuilder.Entity<EventReferenceLogEntity>().HasKey(e => e.Id);
+            modelBuilder.Entity<EventReferenceLogEntity>().HasIndex(e => e.EventStatus);
+            modelBuilder.Entity<EventReferenceLogEntity>().HasIndex(e => e.HttpQueryType);
+            modelBuilder.Entity<EventReferenceLogEntity>().HasIndex(e => e.Date);
         }
     }
 }

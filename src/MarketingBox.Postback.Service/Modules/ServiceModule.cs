@@ -15,6 +15,14 @@ namespace MarketingBox.Postback.Service.Modules
                 .RegisterType<ReferenceRepository>()
                 .As<IReferenceRepository>()
                 .SingleInstance();
+            builder
+                .RegisterType<AffiliateReferenceLoggerRepository>()
+                .As<IAffiliateReferenceLoggerRepository>()
+                .SingleInstance();
+            builder
+                .RegisterType<EventReferenceLoggerRepository>()
+                .As<IEventReferenceLoggerRepository>()
+                .SingleInstance();
 
             builder
                 .RegisterType<DatabaseContextFactory>()
