@@ -52,6 +52,8 @@ namespace MarketingBox.Postback.Service.Engines
                         reference = referenceEntity.DepositReference;
                         log.EventStatus = Status.Deposited;
                         break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(status));
                 }
 
 
@@ -64,6 +66,8 @@ namespace MarketingBox.Postback.Service.Engines
 
                             using var client = new HttpClient();
                             postbackResponse = await client.GetAsync(registrationReference);
+
+                            log.PostbackReference = registrationReference;
                             break;
                         }
                     case HttpQueryType.Post:
@@ -75,11 +79,11 @@ namespace MarketingBox.Postback.Service.Engines
                             postbackResponse = await client.PostAsync(
                                 reference,
                                 data);
+                            log.PostbackReference = reference;
                             break;
                         }
                 }
 
-                log.PostbackReference = reference;
                 log.PostbackResult = JsonConvert.SerializeObject(postbackResponse);
                 log.HttpQueryType = referenceEntity.HttpQueryType;
                 log.Date = DateTime.UtcNow;

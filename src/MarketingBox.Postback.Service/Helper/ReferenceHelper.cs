@@ -9,18 +9,19 @@ namespace MarketingBox.Postback.Service.Helper
             RegistrationAdditionalInfo additionalInfo)
         {
             return reference
-                .Replace("{Sub1}", additionalInfo.Sub1)
-                .Replace("{Sub2}", additionalInfo.Sub2)
-                .Replace("{Sub3}", additionalInfo.Sub3)
-                .Replace("{Sub4}", additionalInfo.Sub4)
-                .Replace("{Sub5}", additionalInfo.Sub5)
-                .Replace("{Sub6}", additionalInfo.Sub6)
-                .Replace("{Sub7}", additionalInfo.Sub7)
-                .Replace("{Sub8}", additionalInfo.Sub8)
-                .Replace("{Sub9}", additionalInfo.Sub9)
-                .Replace("{Sub10}", additionalInfo.Sub10)
-                .Replace("{Funnel}", additionalInfo.Funnel)
-                .Replace("{AffCode}", additionalInfo.AffCode);
+                .ToLowerInvariant()
+                .Replace("{sub1}", additionalInfo.Sub1)
+                .Replace("{sub2}", additionalInfo.Sub2)
+                .Replace("{sub3}", additionalInfo.Sub3)
+                .Replace("{sub4}", additionalInfo.Sub4)
+                .Replace("{sub5}", additionalInfo.Sub5)
+                .Replace("{sub6}", additionalInfo.Sub6)
+                .Replace("{sub7}", additionalInfo.Sub7)
+                .Replace("{sub8}", additionalInfo.Sub8)
+                .Replace("{sub9}", additionalInfo.Sub9)
+                .Replace("{sub10}", additionalInfo.Sub10)
+                .Replace("{funnel}", additionalInfo.Funnel)
+                .Replace("{affcode}", additionalInfo.AffCode);
         }
     }
 }
