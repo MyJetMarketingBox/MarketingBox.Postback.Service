@@ -19,7 +19,7 @@ namespace TestApp
             var factory = new PostbackServiceClientFactory("http://localhost:5001");
             var client = factory.GetPostbackService();
 
-            var resp = await client.GetReferenceAsync(new ReferenceByAffiliateRequest() { AffiliateId = 1 });
+            var resp = await client.GetReferenceAsync(new ByAffiliateIdRequest() { AffiliateId = 1 });
             if (resp?.Success == true)
             {
                 var data = resp.Data;

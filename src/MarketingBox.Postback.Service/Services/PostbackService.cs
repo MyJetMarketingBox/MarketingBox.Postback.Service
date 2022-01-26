@@ -32,7 +32,7 @@ namespace MarketingBox.Postback.Service.Services
            return new Response<T> { Success = false, ErrorMessage = errorMessage };
         }
 
-        public async Task<Response<bool>> DeleteReferenceAsync(ReferenceByAffiliateRequest request)
+        public async Task<Response<bool>> DeleteReferenceAsync(ByAffiliateIdRequest request)
         {
             try
             {
@@ -40,7 +40,7 @@ namespace MarketingBox.Postback.Service.Services
 
                 await _referenceRepository.DeleteReferenceAsync(request.AffiliateId);
 
-                await _loggerRepository.CreateLogAsync(request.AffiliateId, OperationType.Delete);
+                await _loggerRepository.CreateAsync(request.AffiliateId, OperationType.Delete);
 
                 return new Response<bool> { Success = true, Data = true };
             }
@@ -50,7 +50,7 @@ namespace MarketingBox.Postback.Service.Services
             }
         }
 
-        public async Task<Response<ReferenceResponse>> GetReferenceAsync(ReferenceByAffiliateRequest request)
+        public async Task<Response<ReferenceResponse>> GetReferenceAsync(ByAffiliateIdRequest request)
         {
             try
             {
@@ -58,7 +58,7 @@ namespace MarketingBox.Postback.Service.Services
 
                 var res = await _referenceRepository.GetReferenceAsync(request.AffiliateId);
 
-                await _loggerRepository.CreateLogAsync(request.AffiliateId, OperationType.Get);
+                await _loggerRepository.CreateAsync(request.AffiliateId, OperationType.Get);
 
                 return new Response<ReferenceResponse>
                 {
@@ -80,7 +80,7 @@ namespace MarketingBox.Postback.Service.Services
 
                 var res = await _referenceRepository.CreateReferenceAsync(_mapper.Map<Reference>(request));
 
-                await _loggerRepository.CreateLogAsync(request.AffiliateId, OperationType.Create);
+                await _loggerRepository.CreateAsync(request.AffiliateId, OperationType.Create);
 
                 return new Response<ReferenceResponse>
                 {
@@ -102,7 +102,7 @@ namespace MarketingBox.Postback.Service.Services
 
                 var res = await _referenceRepository.UpdateReferenceAsync(_mapper.Map<Reference>(request));
 
-                await _loggerRepository.CreateLogAsync(request.AffiliateId, OperationType.Update);
+                await _loggerRepository.CreateAsync(request.AffiliateId, OperationType.Update);
 
                 return new Response<ReferenceResponse>
                 {

@@ -5,6 +5,8 @@ namespace MarketingBox.Postback.Service.Domain
 {
     public interface IEventReferenceLoggerRepository
     {
-        Task CreateLogAsync(EventReferenceLog eventReferenceLog);
+        Task CreateAsync(EventReferenceLog eventReferenceLog);
+        Task<EventReferenceLog[]> GetAsync(long affiliateId);
+        Task<EventReferenceLog[]> SearchAsync(FilterLogsRequest filterLogsRequest);
     }
 }

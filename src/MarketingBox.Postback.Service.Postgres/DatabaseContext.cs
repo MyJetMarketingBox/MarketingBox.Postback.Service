@@ -45,6 +45,7 @@ namespace MarketingBox.Postback.Service.Postgres
             modelBuilder.Entity<ReferenceEntity>().HasKey(e => e.Id);
             modelBuilder.Entity<ReferenceEntity>().HasIndex(e => e.AffiliateId).IsUnique();
         }
+
         private static void SetAffiliateReferenceLogEntity(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<AffiliateReferenceLogEntity>().ToTable(AffiliateReferenceLogTableName);
@@ -53,10 +54,12 @@ namespace MarketingBox.Postback.Service.Postgres
             modelBuilder.Entity<AffiliateReferenceLogEntity>().HasIndex(e => e.Operation);
             modelBuilder.Entity<AffiliateReferenceLogEntity>().HasIndex(e => e.Date);
         }
+
         private static void SetEventReferenceLogEntity(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<EventReferenceLogEntity>().ToTable(EventReferenceLogTableName);
             modelBuilder.Entity<EventReferenceLogEntity>().HasKey(e => e.Id);
+            modelBuilder.Entity<EventReferenceLogEntity>().HasIndex(e => e.AffiliateId);
             modelBuilder.Entity<EventReferenceLogEntity>().HasIndex(e => e.EventStatus);
             modelBuilder.Entity<EventReferenceLogEntity>().HasIndex(e => e.HttpQueryType);
             modelBuilder.Entity<EventReferenceLogEntity>().HasIndex(e => e.Date);

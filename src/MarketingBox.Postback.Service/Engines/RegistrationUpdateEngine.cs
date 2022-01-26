@@ -39,8 +39,9 @@ namespace MarketingBox.Postback.Service.Engines
                 string reference = string.Empty;
 
                 var referenceEntity = await _repository.GetReferenceAsync(affiliateId);
-                var log = new EventReferenceLog();
 
+                var log = new EventReferenceLog();
+                log.AffiliateId = affiliateId;
 
                 switch (status)
                 {
@@ -53,7 +54,8 @@ namespace MarketingBox.Postback.Service.Engines
                         log.EventStatus = Status.Deposited;
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException(nameof(status));
+                        _logger.LogWarning("Message with {status} status was ignored. Only messages with 'Registered' and 'Deposited' statuses are handled.", status);
+                        return;
                 }
 
 
@@ -83,12 +85,12 @@ namespace MarketingBox.Postback.Service.Engines
                             break;
                         }
                 }
-
+                
                 log.PostbackResult = JsonConvert.SerializeObject(postbackResponse);
                 log.HttpQueryType = referenceEntity.HttpQueryType;
                 log.Date = DateTime.UtcNow;
 
-                await _eventReferenceLogger.CreateLogAsync(log);
+                await _eventReferenceLogger.CreateAsync(log);
                 // telegram.Handle();
             }
             catch(Exception ex)

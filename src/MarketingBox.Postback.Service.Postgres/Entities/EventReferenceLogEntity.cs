@@ -1,5 +1,4 @@
 ﻿using MarketingBox.Postback.Service.Domain.Models;
-using System;
 
 namespace MarketingBox.Postback.Service.Postgres.Entities
 {

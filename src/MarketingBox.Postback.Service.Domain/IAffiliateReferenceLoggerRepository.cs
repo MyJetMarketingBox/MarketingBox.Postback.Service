@@ -5,6 +5,6 @@ namespace MarketingBox.Postback.Service.Domain
 {
     public interface IAffiliateReferenceLoggerRepository
     {
-        Task CreateLogAsync(long affiliateId, OperationType operationType);
+        Task CreateAsync(long affiliateId, OperationType operationType);
     }
 }

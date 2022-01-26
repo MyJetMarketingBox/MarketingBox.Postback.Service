@@ -8,7 +8,7 @@ namespace MarketingBox.Postback.Service.Grpc
     public interface IPostbackService
     {
         [OperationContract]
-        Task<Response<ReferenceResponse>> GetReferenceAsync(ReferenceByAffiliateRequest request);
+        Task<Response<ReferenceResponse>> GetReferenceAsync(ByAffiliateIdRequest request);
 
         [OperationContract]
         Task<Response<ReferenceResponse>> CreateReferenceAsync(FullReferenceRequest request);
@@ -17,6 +17,6 @@ namespace MarketingBox.Postback.Service.Grpc
         Task<Response<ReferenceResponse>> UpdateReferenceAsync(FullReferenceRequest request);
 
         [OperationContract]
-        Task<Response<bool>> DeleteReferenceAsync(ReferenceByAffiliateRequest request);
+        Task<Response<bool>> DeleteReferenceAsync(ByAffiliateIdRequest request);
     }
 }

@@ -18,7 +18,7 @@ namespace MarketingBox.Postback.Service.Repositories
         {
         }
 
-        public async Task CreateLogAsync(long affiliateId, OperationType operationType)
+        public async Task CreateAsync(long affiliateId, OperationType operationType)
         {
             try
             {

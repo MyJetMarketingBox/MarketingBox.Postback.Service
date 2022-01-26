@@ -4,6 +4,7 @@ namespace MarketingBox.Postback.Service.Domain.Models
 {
     public class EventReferenceLog
     {
+        public long AffiliateId { get; set; }
         public Status EventStatus { get; set; }
         public HttpQueryType HttpQueryType { get; set; }
         public string PostbackReference { get; set; }
