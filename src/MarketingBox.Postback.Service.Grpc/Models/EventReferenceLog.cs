@@ -24,5 +24,8 @@ namespace MarketingBox.Postback.Service.Grpc.Models
 
         [DataMember(Order = 6)]
         public DateTime Date { get; set; }
+
+        [DataMember(Order = 7)]
+        public long Id { get; set; }
     }
 }
