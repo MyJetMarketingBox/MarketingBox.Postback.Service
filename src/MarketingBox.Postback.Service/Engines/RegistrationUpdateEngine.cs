@@ -36,7 +36,7 @@ namespace MarketingBox.Postback.Service.Engines
             try
             {
                 HttpResponseMessage postbackResponse = null;
-                string reference = string.Empty;
+                string reference;
 
                 var referenceEntity = await _repository.GetReferenceAsync(affiliateId);
 
@@ -49,7 +49,7 @@ namespace MarketingBox.Postback.Service.Engines
                         reference = referenceEntity.RegistrationReference;
                         log.EventStatus = Status.Registered;
                         break;
-                    case RegistrationStatus.Deposited:
+                    case RegistrationStatus.Approved:
                         reference = referenceEntity.DepositReference;
                         log.EventStatus = Status.Deposited;
                         break;
