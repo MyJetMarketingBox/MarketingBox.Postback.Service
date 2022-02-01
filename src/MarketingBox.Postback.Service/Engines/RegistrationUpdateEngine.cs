@@ -51,10 +51,10 @@ namespace MarketingBox.Postback.Service.Engines
                         break;
                     case RegistrationStatus.Approved:
                         reference = referenceEntity.DepositReference;
-                        log.EventStatus = Status.Deposited;
+                        log.EventStatus = Status.Approved;
                         break;
                     default:
-                        _logger.LogWarning("Message with {status} status was ignored. Only messages with 'Registered' and 'Deposited' statuses are handled.", status);
+                        _logger.LogWarning("Message with {status} status was ignored. Only messages with 'Registered' and 'Approved' statuses are handled.", status);
                         return;
                 }
 
