@@ -6,7 +6,7 @@ namespace MarketingBox.Postback.Service.Grpc.Models
     public class Response<T>
     {
         [DataMember(Order = 1)]
-        public bool Success { get; set; }
+        public StatusCode StatusCode { get; set; }
         
         [DataMember(Order = 2)]
         public string ErrorMessage { get; set; }

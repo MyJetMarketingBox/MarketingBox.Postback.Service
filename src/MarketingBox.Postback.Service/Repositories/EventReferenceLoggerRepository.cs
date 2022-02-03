@@ -67,7 +67,7 @@ namespace MarketingBox.Postback.Service.Repositories
                 var query = context.EventReferenceLogs.AsQueryable();
                 if(request.AffiliateId.HasValue)
                 {
-                    query = query.Where(x=>x.AffiliateId==request.AffiliateId.Value);
+                    query = query.Where(x=> x.AffiliateId == request.AffiliateId.Value);
                 }
                 if (request.EventStatus.HasValue)
                 {
@@ -83,7 +83,7 @@ namespace MarketingBox.Postback.Service.Repositories
                 }
                 if (request.ToDate.HasValue)
                 {
-                    query = query.Where(x => x.Date <= request.ToDate.Value);
+                    query = query.Where(x => x.Date <= request.ToDate.Value.Add(new TimeSpan(23, 59, 59)));
                 }
 
                 var limit = request.Take <= 0 ? 1000 : request.Take;
