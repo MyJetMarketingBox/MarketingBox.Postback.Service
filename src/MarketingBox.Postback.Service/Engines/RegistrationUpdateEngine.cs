@@ -82,6 +82,7 @@ namespace MarketingBox.Postback.Service.Engines
                                 reference,
                                 data);
                             log.PostbackReference = reference;
+                            log.RequestBody = json; 
                             break;
                         }
                 }

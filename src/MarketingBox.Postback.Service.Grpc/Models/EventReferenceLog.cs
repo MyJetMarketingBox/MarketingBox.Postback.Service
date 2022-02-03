@@ -18,14 +18,17 @@ namespace MarketingBox.Postback.Service.Grpc.Models
 
         [DataMember(Order = 4)]
         public string PostbackReference { get; set; }
-
+        
         [DataMember(Order = 5)]
-        public string PostbackResult { get; set; }
+        public string RequestBody { get; set; }
 
         [DataMember(Order = 6)]
-        public DateTime Date { get; set; }
+        public string PostbackResult { get; set; }
 
         [DataMember(Order = 7)]
+        public DateTime Date { get; set; }
+
+        [DataMember(Order = 8)]
         public long Id { get; set; }
     }
 }

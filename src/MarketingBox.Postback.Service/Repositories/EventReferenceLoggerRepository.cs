@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using MarketingBox.Postback.Service.Domain.Exceptions;
 
 namespace MarketingBox.Postback.Service.Repositories
 {
@@ -50,6 +51,10 @@ namespace MarketingBox.Postback.Service.Repositories
             {
                 await using var context = _factory.Create();
                 var result = context.EventReferenceLogs.Where(x => x.AffiliateId == affiliateId).ToArray();
+                if (result.Length == 0)
+                {
+                    throw new NotFoundException(nameof(affiliateId), affiliateId);
+                }
                 return result;
             }
             catch (Exception ex)
