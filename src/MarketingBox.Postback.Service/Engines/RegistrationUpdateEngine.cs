@@ -66,6 +66,7 @@ namespace MarketingBox.Postback.Service.Engines
                 var log = new EventReferenceLog
                 {
                     AffiliateId = affiliateId,
+                    RegistrationUId = registrationUId,
                     EventMessage = JsonConvert.SerializeObject(message),
                     EventType = eventType
                 };
@@ -111,7 +112,6 @@ namespace MarketingBox.Postback.Service.Engines
                 log.ResponseStatus = postbackResponse is {StatusCode: HttpStatusCode.OK}
                     ? ResponseStatus.Ok
                     : ResponseStatus.Failed;
-                
                 log.PostbackResponse = JsonConvert.SerializeObject(postbackResponse);
                 log.HttpQueryType = referenceEntity.HttpQueryType;
                 log.Date = DateTime.UtcNow;
