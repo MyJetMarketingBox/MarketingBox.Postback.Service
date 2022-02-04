@@ -6,10 +6,13 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace MarketingBox.Postback.Service.Postgres.Migrations
 {
-    public partial class LogTables : Migration
+    public partial class Init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.EnsureSchema(
+                name: "postback-service");
+
             migrationBuilder.CreateTable(
                 name: "affiliatereferencelog",
                 schema: "postback-service",
@@ -33,15 +36,39 @@ namespace MarketingBox.Postback.Service.Postgres.Migrations
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    EventStatus = table.Column<int>(type: "integer", nullable: false),
+                    AffiliateId = table.Column<long>(type: "bigint", nullable: false),
+                    EventType = table.Column<int>(type: "integer", nullable: false),
                     HttpQueryType = table.Column<int>(type: "integer", nullable: false),
                     PostbackReference = table.Column<string>(type: "text", nullable: true),
-                    PostbackResult = table.Column<string>(type: "text", nullable: true),
-                    Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    RequestBody = table.Column<string>(type: "text", nullable: true),
+                    PostbackResponse = table.Column<string>(type: "text", nullable: true),
+                    Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    RegistrationUId = table.Column<string>(type: "text", nullable: true),
+                    EventMessage = table.Column<string>(type: "text", nullable: true),
+                    ResponseStatus = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_eventreferencelog", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "reference",
+                schema: "postback-service",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    AffiliateId = table.Column<long>(type: "bigint", nullable: false),
+                    RegistrationReference = table.Column<string>(type: "text", nullable: true),
+                    RegistrationTGReference = table.Column<string>(type: "text", nullable: true),
+                    DepositReference = table.Column<string>(type: "text", nullable: true),
+                    DepositTGReference = table.Column<string>(type: "text", nullable: true),
+                    HttpQueryType = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_reference", x => x.Id);
                 });
 
             migrationBuilder.CreateIndex(
@@ -63,22 +90,41 @@ namespace MarketingBox.Postback.Service.Postgres.Migrations
                 column: "Operation");
 
             migrationBuilder.CreateIndex(
+                name: "IX_eventreferencelog_AffiliateId",
+                schema: "postback-service",
+                table: "eventreferencelog",
+                column: "AffiliateId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_eventreferencelog_Date",
                 schema: "postback-service",
                 table: "eventreferencelog",
                 column: "Date");
 
             migrationBuilder.CreateIndex(
-                name: "IX_eventreferencelog_EventStatus",
+                name: "IX_eventreferencelog_EventType",
                 schema: "postback-service",
                 table: "eventreferencelog",
-                column: "EventStatus");
+                column: "EventType");
 
             migrationBuilder.CreateIndex(
                 name: "IX_eventreferencelog_HttpQueryType",
                 schema: "postback-service",
                 table: "eventreferencelog",
                 column: "HttpQueryType");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_eventreferencelog_ResponseStatus",
+                schema: "postback-service",
+                table: "eventreferencelog",
+                column: "ResponseStatus");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_reference_AffiliateId",
+                schema: "postback-service",
+                table: "reference",
+                column: "AffiliateId",
+                unique: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -89,6 +135,10 @@ namespace MarketingBox.Postback.Service.Postgres.Migrations
 
             migrationBuilder.DropTable(
                 name: "eventreferencelog",
+                schema: "postback-service");
+
+            migrationBuilder.DropTable(
+                name: "reference",
                 schema: "postback-service");
         }
     }

@@ -11,7 +11,7 @@ namespace MarketingBox.Postback.Service.Grpc.Models
         public long? AffiliateId { get; set; }
 
         [DataMember(Order = 2)]
-        public Status? EventStatus { get; set; }
+        public EventType? EventStatus { get; set; }
 
         [DataMember(Order = 3)]
         public HttpQueryType? HttpQueryType { get; set; }
@@ -30,5 +30,8 @@ namespace MarketingBox.Postback.Service.Grpc.Models
 
         [DataMember(Order = 8)] 
         public bool Asc { get; set; }
+        
+        [DataMember(Order = 9)] 
+        public ResponseStatus? ResponseStatus { get; set; }
     }
 }

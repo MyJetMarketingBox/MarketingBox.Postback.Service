@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MarketingBox.Postback.Service.Postgres.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20220203123212_StatusCode_in_ResponseModel_and_RequestBody_property_for_log_model")]
-    partial class StatusCode_in_ResponseModel_and_RequestBody_property_for_log_model
+    [Migration("20220204151407_Init")]
+    partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -67,7 +67,10 @@ namespace MarketingBox.Postback.Service.Postgres.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("EventStatus")
+                    b.Property<string>("EventMessage")
+                        .HasColumnType("text");
+
+                    b.Property<int>("EventType")
                         .HasColumnType("integer");
 
                     b.Property<int>("HttpQueryType")
@@ -76,11 +79,17 @@ namespace MarketingBox.Postback.Service.Postgres.Migrations
                     b.Property<string>("PostbackReference")
                         .HasColumnType("text");
 
-                    b.Property<string>("PostbackResult")
+                    b.Property<string>("PostbackResponse")
+                        .HasColumnType("text");
+
+                    b.Property<string>("RegistrationUId")
                         .HasColumnType("text");
 
                     b.Property<string>("RequestBody")
                         .HasColumnType("text");
+
+                    b.Property<int>("ResponseStatus")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -88,9 +97,11 @@ namespace MarketingBox.Postback.Service.Postgres.Migrations
 
                     b.HasIndex("Date");
 
-                    b.HasIndex("EventStatus");
+                    b.HasIndex("EventType");
 
                     b.HasIndex("HttpQueryType");
+
+                    b.HasIndex("ResponseStatus");
 
                     b.ToTable("eventreferencelog", "postback-service");
                 });

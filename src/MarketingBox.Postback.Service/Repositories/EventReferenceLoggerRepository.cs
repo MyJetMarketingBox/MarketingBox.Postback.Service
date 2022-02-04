@@ -74,13 +74,17 @@ namespace MarketingBox.Postback.Service.Repositories
                 {
                     query = query.Where(x=> x.AffiliateId == request.AffiliateId.Value);
                 }
-                if (request.EventStatus.HasValue)
+                if (request.EventType.HasValue)
                 {
-                    query = query.Where(x => x.EventStatus == request.EventStatus.Value);
+                    query = query.Where(x => x.EventType == request.EventType.Value);
                 }
                 if (request.HttpQueryType.HasValue)
                 {
                     query = query.Where(x => x.HttpQueryType == request.HttpQueryType.Value);
+                }
+                if (request.ResponseStatus.HasValue)
+                {
+                    query = query.Where(x => x.ResponseStatus == request.ResponseStatus.Value);
                 }
                 if (request.FromDate.HasValue)
                 {
