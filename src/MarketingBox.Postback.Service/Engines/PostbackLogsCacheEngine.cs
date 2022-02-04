@@ -40,8 +40,9 @@ namespace MarketingBox.Postback.Service.Engines
 
                 _cache = result
                     .Select(p => new PostbackLogsCacheModel(p.RegistrationUId, p.EventType))
+                    .Reverse()
                     .ToHashSet();
-                _logger.LogInformation("Cache was updated: {count} records were loaded", _cache.Count);
+                _logger.LogInformation("Cache was updated: {Count} records were loaded", _cache.Count);
             }
             catch(Exception ex)
             {
@@ -53,20 +54,20 @@ namespace MarketingBox.Postback.Service.Engines
         {
             if (_cache.Contains(record))
             {
-                _logger.LogInformation("Cache already contains {record}", record);
+                _logger.LogInformation("Cache already contains {Record}", record);
                 return true;
             }
             
             if (_cache.Count == Capacity)
             {
-                var recordToRemove = _cache.First(); 
+                var recordToRemove = _cache.First();
                 _cache.Remove(recordToRemove);
-                _logger.LogInformation("Cache limit is reached: {recordToRemove} was removed", recordToRemove);
+                _logger.LogInformation("Cache limit is reached: {RecordToRemove} was removed", recordToRemove);
             }
 
             _cache.Add(record);
             
-            _logger.LogInformation("Cache was updated: {record} was added", record);
+            _logger.LogInformation("Cache was updated: {Record} was added", record);
             return false;
         }
     }
