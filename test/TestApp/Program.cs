@@ -20,7 +20,7 @@ namespace TestApp
             var client = factory.GetPostbackService();
 
             var resp = await client.GetReferenceAsync(new ByAffiliateIdRequest() { AffiliateId = 1 });
-            if (resp?.Success == true)
+            if (resp?.StatusCode == StatusCode.Ok)
             {
                 var data = resp.Data;
                 Console.WriteLine(data?.AffiliateId);

@@ -33,10 +33,7 @@ namespace MarketingBox.Postback.Service.Subscribers
             {
                 _logger.LogInformation("Handling message {@context}", message);
 
-                await _registrationUpdateEngine.HandleRegistration(
-                    message.RouteInfo.AffiliateId,
-                    message.RouteInfo.Status,
-                    message.AdditionalInfo);
+                await _registrationUpdateEngine.HandleRegistration(message);
 
                 _logger.LogInformation("Has been handled {@context}", message);
             }

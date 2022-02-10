@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MarketingBox.Postback.Service.Helper;
 
 namespace MarketingBox.Postback.Service.Services
 {
@@ -36,19 +37,16 @@ namespace MarketingBox.Postback.Service.Services
 
                 return new Response<IReadOnlyCollection<EventReferenceLog>>
                 {
-                    Success = true,
+                    StatusCode = StatusCode.Ok,
                     Data = res.Select(_mapper.Map<EventReferenceLog>).ToArray()
                 };
             }
             catch(Exception ex)
             {
-                return new Response<IReadOnlyCollection<EventReferenceLog>>
-                {
-                    Success = false,
-                    ErrorMessage = ex.Message
-                };
+                return ex.FailedResponse<IReadOnlyCollection<EventReferenceLog>>();
             }
         }
+
 
         public async Task<Response<IReadOnlyCollection<EventReferenceLog>>> SearchLogsAsync(Grpc.Models.FilterLogsRequest request)
         {
@@ -60,17 +58,13 @@ namespace MarketingBox.Postback.Service.Services
 
                 return new Response<IReadOnlyCollection<EventReferenceLog>>
                 {
-                    Success = true,
+                    StatusCode = StatusCode.Ok,
                     Data = res.Select(_mapper.Map<EventReferenceLog>).ToArray()
                 };
             }
             catch (Exception ex)
             {
-                return new Response<IReadOnlyCollection<EventReferenceLog>>
-                {
-                    Success = false,
-                    ErrorMessage = ex.Message
-                };
+                return ex.FailedResponse<IReadOnlyCollection<EventReferenceLog>>();
             }
         }
     }

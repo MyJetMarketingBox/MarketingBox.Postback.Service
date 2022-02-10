@@ -1,14 +1,10 @@
-﻿using MarketingBox.Registration.Service.Domain.Registrations;
-using System.Threading.Tasks;
-using RegistrationAdditionalInfo = MarketingBox.Registration.Service.Messages.Registrations.RegistrationAdditionalInfo;
+﻿using System.Threading.Tasks;
+using MarketingBox.Registration.Service.Messages.Registrations;
 
 namespace MarketingBox.Postback.Service.Engines
 {
     public interface IRegistrationUpdateEngine
     {
-        Task HandleRegistration(
-            long affiliateId,
-            RegistrationStatus status,
-            RegistrationAdditionalInfo additionalInfo);
+        Task HandleRegistration(RegistrationUpdateMessage message);
     }
 }

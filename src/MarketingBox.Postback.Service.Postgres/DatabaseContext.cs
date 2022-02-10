@@ -60,7 +60,8 @@ namespace MarketingBox.Postback.Service.Postgres
             modelBuilder.Entity<EventReferenceLogEntity>().ToTable(EventReferenceLogTableName);
             modelBuilder.Entity<EventReferenceLogEntity>().HasKey(e => e.Id);
             modelBuilder.Entity<EventReferenceLogEntity>().HasIndex(e => e.AffiliateId);
-            modelBuilder.Entity<EventReferenceLogEntity>().HasIndex(e => e.EventStatus);
+            modelBuilder.Entity<EventReferenceLogEntity>().HasIndex(e => e.EventType);
+            modelBuilder.Entity<EventReferenceLogEntity>().HasIndex(e => e.ResponseStatus);
             modelBuilder.Entity<EventReferenceLogEntity>().HasIndex(e => e.HttpQueryType);
             modelBuilder.Entity<EventReferenceLogEntity>().HasIndex(e => e.Date);
         }

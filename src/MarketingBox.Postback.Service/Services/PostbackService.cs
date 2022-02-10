@@ -7,6 +7,7 @@ using MarketingBox.Postback.Service.Domain;
 using AutoMapper;
 using System;
 using System.Text.Json;
+using MarketingBox.Postback.Service.Helper;
 
 namespace MarketingBox.Postback.Service.Services
 {
@@ -27,10 +28,6 @@ namespace MarketingBox.Postback.Service.Services
             _mapper = mapper;
             _loggerRepository = loggerRepository;
         }
-        private static Response<T> FailedResponse<T>(string errorMessage)
-        {
-           return new Response<T> { Success = false, ErrorMessage = errorMessage };
-        }
 
         public async Task<Response<bool>> DeleteReferenceAsync(ByAffiliateIdRequest request)
         {
@@ -42,11 +39,11 @@ namespace MarketingBox.Postback.Service.Services
 
                 await _loggerRepository.CreateAsync(request.AffiliateId, OperationType.Delete);
 
-                return new Response<bool> { Success = true, Data = true };
+                return new Response<bool> { StatusCode = StatusCode.Ok, Data = true };
             }
             catch(Exception ex)
             {
-                return FailedResponse<bool>(ex.Message);
+                return ex.FailedResponse<bool>();
             }
         }
 
@@ -62,13 +59,13 @@ namespace MarketingBox.Postback.Service.Services
 
                 return new Response<ReferenceResponse>
                 {
-                    Success = true,
+                    StatusCode = StatusCode.Ok,
                     Data = _mapper.Map<ReferenceResponse>(res)
                 };
             }
             catch(Exception ex)
             {
-                return FailedResponse<ReferenceResponse>(ex.Message);
+                return ex.FailedResponse<ReferenceResponse>();
             }
         }
 
@@ -84,13 +81,13 @@ namespace MarketingBox.Postback.Service.Services
 
                 return new Response<ReferenceResponse>
                 {
-                    Success = true, 
+                    StatusCode = StatusCode.Ok,
                     Data = _mapper.Map<ReferenceResponse>(res)
                 };
             }
             catch(Exception ex)
             {
-                return FailedResponse<ReferenceResponse>(ex.Message);
+                return ex.FailedResponse<ReferenceResponse>();
             }
         }
 
@@ -106,13 +103,13 @@ namespace MarketingBox.Postback.Service.Services
 
                 return new Response<ReferenceResponse>
                 {
-                    Success = true,
+                    StatusCode = StatusCode.Ok,
                     Data = _mapper.Map<ReferenceResponse>(res)
                 };
             }
             catch(Exception ex)
             {
-                return FailedResponse<ReferenceResponse>(ex.Message);
+                return ex.FailedResponse<ReferenceResponse>();
             }
         }
     }

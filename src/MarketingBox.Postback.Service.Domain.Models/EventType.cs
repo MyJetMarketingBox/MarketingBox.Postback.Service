@@ -1,8 +1,8 @@
 ﻿namespace MarketingBox.Postback.Service.Domain.Models
 {
-    public enum Status
+    public enum EventType
     {
         Registered,
-        Deposited
+        Approved
     }
 }

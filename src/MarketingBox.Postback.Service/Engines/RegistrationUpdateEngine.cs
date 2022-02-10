@@ -5,10 +5,11 @@ using MarketingBox.Registration.Service.Domain.Registrations;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using RegistrationAdditionalInfo = MarketingBox.Registration.Service.Messages.Registrations.RegistrationAdditionalInfo;
+using MarketingBox.Registration.Service.Messages.Registrations;
 
 namespace MarketingBox.Postback.Service.Engines
 {
@@ -17,46 +18,65 @@ namespace MarketingBox.Postback.Service.Engines
         private readonly ILogger<RegistrationUpdateEngine> _logger;
         private readonly IReferenceRepository _repository;
         private readonly IEventReferenceLoggerRepository _eventReferenceLogger;
+        private readonly IPostbackLogsCacheEngine _cache;
 
         public RegistrationUpdateEngine(
             ILogger<RegistrationUpdateEngine> logger,
             IReferenceRepository repository,
-            IEventReferenceLoggerRepository eventReferenceLogger)
+            IEventReferenceLoggerRepository eventReferenceLogger,
+            IPostbackLogsCacheEngine cache)
         {
             _logger = logger;
             _repository = repository;
             _eventReferenceLogger = eventReferenceLogger;
+            _cache = cache;
         }
 
-        public async Task HandleRegistration(
-            long affiliateId,
-            RegistrationStatus status,
-            RegistrationAdditionalInfo additionalInfo)
+        public async Task HandleRegistration(RegistrationUpdateMessage message)
         {
             try
             {
                 HttpResponseMessage postbackResponse = null;
-                string reference = string.Empty;
+                var affiliateId = message.RouteInfo.AffiliateId;
+                var additionalInfo = message.AdditionalInfo;
+                var registrationUId = message.GeneralInfo.RegistrationUId;
+                EventType eventType;
+                switch (message.RouteInfo.Status)
+                {
+                    case RegistrationStatus.Registered:
+                        eventType = EventType.Registered;
+                        break;
+                    case RegistrationStatus.Approved:
+                        eventType = EventType.Approved;
+                        break;
+                    default:
+                        _logger.LogWarning(
+                            "Message with {status} status was ignored. Only messages with 'Registered' and 'Approved' statuses are handled.",
+                            message.RouteInfo.Status);
+                        return;
+                }
+                
+                if (_cache.CheckAndUpdateCache(new PostbackLogsCacheModel(registrationUId, eventType)))
+                {
+                    return;
+                }
 
                 var referenceEntity = await _repository.GetReferenceAsync(affiliateId);
 
-                var log = new EventReferenceLog();
-                log.AffiliateId = affiliateId;
-
-                switch (status)
+                var log = new EventReferenceLog
                 {
-                    case RegistrationStatus.Registered:
-                        reference = referenceEntity.RegistrationReference;
-                        log.EventStatus = Status.Registered;
-                        break;
-                    case RegistrationStatus.Deposited:
-                        reference = referenceEntity.DepositReference;
-                        log.EventStatus = Status.Deposited;
-                        break;
-                    default:
-                        _logger.LogWarning("Message with {status} status was ignored. Only messages with 'Registered' and 'Deposited' statuses are handled.", status);
-                        return;
-                }
+                    AffiliateId = affiliateId,
+                    RegistrationUId = registrationUId,
+                    EventMessage = JsonConvert.SerializeObject(message),
+                    EventType = eventType
+                };
+
+                var reference = eventType switch
+                {
+                    EventType.Registered => referenceEntity.RegistrationReference,
+                    EventType.Approved => referenceEntity.DepositReference,
+                    _ => throw new ArgumentOutOfRangeException(nameof(eventType))
+                };
 
 
                 switch (referenceEntity.HttpQueryType)
@@ -82,11 +102,17 @@ namespace MarketingBox.Postback.Service.Engines
                                 reference,
                                 data);
                             log.PostbackReference = reference;
+                            log.RequestBody = json; 
                             break;
                         }
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(referenceEntity.HttpQueryType));
                 }
-                
-                log.PostbackResult = JsonConvert.SerializeObject(postbackResponse);
+
+                log.ResponseStatus = postbackResponse is {StatusCode: HttpStatusCode.OK}
+                    ? ResponseStatus.Ok
+                    : ResponseStatus.Failed;
+                log.PostbackResponse = JsonConvert.SerializeObject(postbackResponse);
                 log.HttpQueryType = referenceEntity.HttpQueryType;
                 log.Date = DateTime.UtcNow;
 
