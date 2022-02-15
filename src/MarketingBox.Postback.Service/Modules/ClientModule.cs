@@ -1,5 +1,4 @@
 ﻿using Autofac;
-using MarketingBox.Registration.Service.Messages;
 using MarketingBox.Registration.Service.Messages.Registrations;
 using MyJetWallet.Sdk.ServiceBus;
 using MyServiceBus.Abstractions;
@@ -16,7 +15,7 @@ namespace MarketingBox.Postback.Service.Modules
 
             builder.RegisterMyServiceBusSubscriberSingle<RegistrationUpdateMessage>(
                 serviceBusClient,
-                Topics.RegistrationUpdateTopic,
+                RegistrationUpdateMessage.Topic,
                 "MarketingBox-Postback-Service",
                 TopicQueueType.PermanentWithSingleConnection);
         }
