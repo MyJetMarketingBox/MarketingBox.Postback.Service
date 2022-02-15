@@ -36,7 +36,7 @@ namespace MarketingBox.Postback.Service.Engines
         {
             try
             {
-                HttpResponseMessage postbackResponse = null;
+                HttpResponseMessage postbackResponse;
                 var affiliateId = message.RouteInfo.AffiliateId;
                 var additionalInfo = message.AdditionalInfo;
                 var registrationUId = message.GeneralInfo.RegistrationUId;
@@ -55,7 +55,7 @@ namespace MarketingBox.Postback.Service.Engines
                             message.RouteInfo.Status);
                         return;
                 }
-                
+
                 if (_cache.CheckAndUpdateCache(new PostbackLogsCacheModel(registrationUId, eventType)))
                 {
                     return;
@@ -78,37 +78,31 @@ namespace MarketingBox.Postback.Service.Engines
                     _ => throw new ArgumentOutOfRangeException(nameof(eventType))
                 };
 
-
+                var postbackReference =
+                    reference.ConfigureReference(additionalInfo);
                 switch (referenceEntity.HttpQueryType)
                 {
                     case HttpQueryType.Get:
-                        {
-                            var registrationReference = 
-                                reference.ConfigureReference(additionalInfo);
-
-                            using var client = new HttpClient();
-                            postbackResponse = await client.GetAsync(registrationReference);
-
-                            log.PostbackReference = registrationReference;
-                            break;
-                        }
+                    {
+                        using var client = new HttpClient();
+                        postbackResponse = await client.GetAsync(postbackReference);
+                        break;
+                    }
                     case HttpQueryType.Post:
-                        {
-                            var json = JsonConvert.SerializeObject(additionalInfo);
-                            var data = new StringContent(json, Encoding.UTF8, "application/json");
-                            
-                            using var client = new HttpClient();
-                            postbackResponse = await client.PostAsync(
-                                reference,
-                                data);
-                            log.PostbackReference = reference;
-                            log.RequestBody = json; 
-                            break;
-                        }
+                    {
+                        var data = new StringContent(string.Empty, Encoding.UTF8, "application/json");
+
+                        using var client = new HttpClient();
+                        postbackResponse = await client.PostAsync(
+                            postbackReference,
+                            data);
+                        break;
+                    }
                     default:
                         throw new ArgumentOutOfRangeException(nameof(referenceEntity.HttpQueryType));
                 }
 
+                log.PostbackReference = postbackReference;
                 log.ResponseStatus = postbackResponse is {StatusCode: HttpStatusCode.OK}
                     ? ResponseStatus.Ok
                     : ResponseStatus.Failed;
@@ -119,7 +113,7 @@ namespace MarketingBox.Postback.Service.Engines
                 await _eventReferenceLogger.CreateAsync(log);
                 // telegram.Handle();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError(ex, ex.Message);
             }
