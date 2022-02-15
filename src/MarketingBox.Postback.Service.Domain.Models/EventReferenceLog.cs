@@ -9,7 +9,6 @@ namespace MarketingBox.Postback.Service.Domain.Models
         public EventType EventType { get; set; }
         public HttpQueryType HttpQueryType { get; set; }
         public string PostbackReference { get; set; }
-        public string RequestBody { get; set; }
         public string PostbackResponse { get; set; }
         public DateTime Date { get; set; }
         public string RegistrationUId { get; set; }

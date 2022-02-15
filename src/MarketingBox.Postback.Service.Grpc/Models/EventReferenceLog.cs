@@ -26,18 +26,15 @@ namespace MarketingBox.Postback.Service.Grpc.Models
         public string PostbackReference { get; set; }
         
         [DataMember(Order = 7)]
-        public string RequestBody { get; set; }
-        
-        [DataMember(Order = 8)]
         public string PostbackResponse { get; set; }
         
-        [DataMember(Order = 9)]
+        [DataMember(Order = 8)]
         public ResponseStatus ResponseStatus { get; set; }
         
-        [DataMember(Order = 10)]
+        [DataMember(Order = 9)]
         public DateTime Date { get; set; }
         
-        [DataMember(Order = 11)]
+        [DataMember(Order = 10)]
         public long Id { get; set; }
     }
 }
