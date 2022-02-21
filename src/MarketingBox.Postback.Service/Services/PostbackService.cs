@@ -4,7 +4,6 @@ using MarketingBox.Postback.Service.Grpc;
 using MarketingBox.Postback.Service.Grpc.Models;
 using MarketingBox.Postback.Service.Domain.Models;
 using MarketingBox.Postback.Service.Domain;
-using AutoMapper;
 using System;
 using System.Text.Json;
 using MarketingBox.Postback.Service.Helper;
@@ -15,17 +14,14 @@ namespace MarketingBox.Postback.Service.Services
     {
         private readonly ILogger<PostbackService> _logger;
         private readonly IReferenceRepository _referenceRepository;
-        private readonly IMapper _mapper;
         private readonly IAffiliateReferenceLoggerRepository _loggerRepository;
 
         public PostbackService(ILogger<PostbackService> logger,
             IReferenceRepository referenceRepository,
-            IMapper mapper,
             IAffiliateReferenceLoggerRepository loggerRepository)
         {
             _logger = logger;
             _referenceRepository = referenceRepository;
-            _mapper = mapper;
             _loggerRepository = loggerRepository;
         }
 
@@ -33,15 +29,16 @@ namespace MarketingBox.Postback.Service.Services
         {
             try
             {
-                _logger.LogInformation("Deleting reference entity for affiliate with id {AffiliateId}", request.AffiliateId);
+                _logger.LogInformation("Deleting reference entity for affiliate with id {AffiliateId}",
+                    request.AffiliateId);
 
-                await _referenceRepository.DeleteReferenceAsync(request.AffiliateId);
+                var deletedId = await _referenceRepository.DeleteReferenceAsync(request.AffiliateId);
 
-                await _loggerRepository.CreateAsync(request.AffiliateId, OperationType.Delete);
+                await _loggerRepository.CreateAsync(request.AffiliateId, deletedId, OperationType.Delete);
 
-                return new Response<bool> { StatusCode = StatusCode.Ok, Data = true };
+                return new Response<bool> {StatusCode = StatusCode.Ok, Data = true};
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return ex.FailedResponse<bool>();
             }
@@ -51,19 +48,20 @@ namespace MarketingBox.Postback.Service.Services
         {
             try
             {
-                _logger.LogInformation("Getting reference entity for affiliate with id {AffiliateId}", request.AffiliateId);
+                _logger.LogInformation("Getting reference entity for affiliate with id {AffiliateId}",
+                    request.AffiliateId);
 
                 var res = await _referenceRepository.GetReferenceAsync(request.AffiliateId);
 
-                await _loggerRepository.CreateAsync(request.AffiliateId, OperationType.Get);
+                await _loggerRepository.CreateAsync(request.AffiliateId, res.Id, OperationType.Get);
 
                 return new Response<Reference>
                 {
                     StatusCode = StatusCode.Ok,
-                    Data = _mapper.Map<Reference>(res)
+                    Data = res
                 };
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return ex.FailedResponse<Reference>();
             }
@@ -75,17 +73,17 @@ namespace MarketingBox.Postback.Service.Services
             {
                 _logger.LogInformation("Saving reference: {SaveReferenceRequest}", JsonSerializer.Serialize(request));
 
-                var res = await _referenceRepository.CreateReferenceAsync(_mapper.Map<Reference>(request));
+                var res = await _referenceRepository.CreateReferenceAsync(request);
 
-                await _loggerRepository.CreateAsync(request.AffiliateId, OperationType.Create);
+                await _loggerRepository.CreateAsync(request.AffiliateId, res.Id, OperationType.Create);
 
                 return new Response<Reference>
                 {
                     StatusCode = StatusCode.Ok,
-                    Data = _mapper.Map<Reference>(res)
+                    Data = res
                 };
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return ex.FailedResponse<Reference>();
             }
@@ -95,19 +93,20 @@ namespace MarketingBox.Postback.Service.Services
         {
             try
             {
-                _logger.LogInformation("Updating reference: {UpdateReferenceRequest}", JsonSerializer.Serialize(request));
+                _logger.LogInformation("Updating reference: {UpdateReferenceRequest}",
+                    JsonSerializer.Serialize(request));
 
-                var res = await _referenceRepository.UpdateReferenceAsync(_mapper.Map<Reference>(request));
+                var res = await _referenceRepository.UpdateReferenceAsync(request);
 
-                await _loggerRepository.CreateAsync(request.AffiliateId, OperationType.Update);
+                await _loggerRepository.CreateAsync(request.AffiliateId, res.Id, OperationType.Update);
 
                 return new Response<Reference>
                 {
                     StatusCode = StatusCode.Ok,
-                    Data = _mapper.Map<Reference>(res)
+                    Data = res
                 };
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return ex.FailedResponse<Reference>();
             }

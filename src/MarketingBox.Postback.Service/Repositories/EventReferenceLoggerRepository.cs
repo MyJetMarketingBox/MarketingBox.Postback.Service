@@ -1,8 +1,6 @@
-﻿using AutoMapper;
-using MarketingBox.Postback.Service.Domain;
+﻿using MarketingBox.Postback.Service.Domain;
 using MarketingBox.Postback.Service.Domain.Models;
 using MarketingBox.Postback.Service.Postgres;
-using MarketingBox.Postback.Service.Postgres.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -17,14 +15,10 @@ namespace MarketingBox.Postback.Service.Repositories
         RepositoryBase<EventReferenceLoggerRepository>,
         IEventReferenceLoggerRepository
     {
-        private readonly IMapper _mapper;
-
         public EventReferenceLoggerRepository(
             ILogger<EventReferenceLoggerRepository> logger,
-            DatabaseContextFactory factory,
-            IMapper mapper) : base(logger, factory)
+            DatabaseContextFactory factory) : base(logger, factory)
         {
-            _mapper = mapper;
         }
 
         public async Task CreateAsync(EventReferenceLog eventReferenceLog)
@@ -32,7 +26,7 @@ namespace MarketingBox.Postback.Service.Repositories
             try
             {
                 await using var context = _factory.Create();
-                await context.EventReferenceLogs.AddAsync(_mapper.Map<EventReferenceLogEntity>(eventReferenceLog));
+                await context.EventReferenceLogs.AddAsync(eventReferenceLog);
                 await context.SaveChangesAsync();
 
                 _logger.LogInformation("Log {eventReferenceLog} was created.", JsonConvert.SerializeObject(eventReferenceLog));

@@ -22,5 +22,8 @@ namespace MarketingBox.Postback.Service.Domain.Models
 
         [DataMember(Order = 6)]
         public HttpQueryType HttpQueryType { get; set; }
+        
+        [DataMember(Order = 7)]
+        public long Id { get; set; }
     }
 }

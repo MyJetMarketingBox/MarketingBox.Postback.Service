@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Text.Json;
 using System.Threading.Tasks;
-using AutoMapper;
 using MarketingBox.Postback.Service.Domain;
 using MarketingBox.Postback.Service.Domain.Exceptions;
 using MarketingBox.Postback.Service.Domain.Models;
 using MarketingBox.Postback.Service.Postgres;
-using MarketingBox.Postback.Service.Postgres.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -15,31 +13,28 @@ namespace MarketingBox.Postback.Service.Repositories
 {
     public class ReferenceRepository : RepositoryBase<ReferenceRepository>, IReferenceRepository
     {
-        private readonly IMapper _mapper;
-
         public ReferenceRepository(
             ILogger<ReferenceRepository> logger,
-            IMapper mapper,
             DatabaseContextFactory factory) : base(logger,factory)
         {
-            _mapper = mapper;
         }
 
-        public async Task DeleteReferenceAsync(long AffiliateId)
+        public async Task<long> DeleteReferenceAsync(long AffiliateId)
         {
             try
             {
                 await using var context = _factory.Create();
                 var entityToDelete = await context.References.FirstOrDefaultAsync(x => x.AffiliateId == AffiliateId);
-
+                
                 if (entityToDelete is null)
                 {
                     throw new NotFoundException(nameof(AffiliateId), AffiliateId);
                 }
-
+                var id = entityToDelete.Id;
                 context.References.Remove(entityToDelete);
 
                 await context.SaveChangesAsync();
+                return id;
             }
             catch (Exception ex)
             {
@@ -57,14 +52,13 @@ namespace MarketingBox.Postback.Service.Repositories
             {
                 await using var context = _factory.Create();
 
-                var entityToCreate = _mapper.Map<ReferenceEntity>(request);
                 var affiliateInDb = await context.References.FirstOrDefaultAsync(x => x.AffiliateId == request.AffiliateId);
 
                 if (affiliateInDb != null)
                 {
                     throw new AlreadyExistsException(nameof(request.AffiliateId), request.AffiliateId);
                 }
-                await context.References.AddAsync(entityToCreate);
+                await context.References.AddAsync(request);
                 await context.SaveChangesAsync();
 
                 return await GetReferenceAsync(request.AffiliateId);

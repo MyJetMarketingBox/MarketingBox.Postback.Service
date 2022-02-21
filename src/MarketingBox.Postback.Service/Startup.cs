@@ -29,8 +29,6 @@ namespace MarketingBox.Postback.Service
             services.AddDatabase(DatabaseContext.Schema,
                 Program.Settings.PostgresConnectionString,
                 o => new DatabaseContext(o));
-
-            services.AddAutoMapper(typeof(Startup));
             
             services.AddMyTelemetry("SP-", Program.Settings.ZipkinUrl);
         }

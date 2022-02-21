@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using MarketingBox.Postback.Service.Domain;
+﻿using MarketingBox.Postback.Service.Domain;
 using MarketingBox.Postback.Service.Grpc;
 using MarketingBox.Postback.Service.Grpc.Models;
 using Microsoft.Extensions.Logging;
@@ -17,16 +16,13 @@ namespace MarketingBox.Postback.Service.Services
     public class EventReferenceLogService : IEventReferenceLogService
     {
         private readonly ILogger<EventReferenceLogService> _logger;
-        private readonly IMapper _mapper;
         private readonly IEventReferenceLoggerRepository _eventReferenceLogger;
 
         public EventReferenceLogService(
             ILogger<EventReferenceLogService> logger,
-            IMapper mapper,
             IEventReferenceLoggerRepository eventReferenceLogger)
         {
             _logger = logger;
-            _mapper = mapper;
             _eventReferenceLogger = eventReferenceLogger;
         }
         public async Task<Response<IReadOnlyCollection<EventReferenceLog>>> GetLogsAsync(ByAffiliateIdRequest request)
@@ -40,7 +36,7 @@ namespace MarketingBox.Postback.Service.Services
                 return new Response<IReadOnlyCollection<EventReferenceLog>>
                 {
                     StatusCode = StatusCode.Ok,
-                    Data = res.Select(_mapper.Map<EventReferenceLog>).ToArray()
+                    Data = res.ToArray()
                 };
             }
             catch(Exception ex)
@@ -61,7 +57,7 @@ namespace MarketingBox.Postback.Service.Services
                 return new Response<IReadOnlyCollection<EventReferenceLog>>
                 {
                     StatusCode = StatusCode.Ok,
-                    Data = res.Select(_mapper.Map<EventReferenceLog>).ToArray()
+                    Data = res.ToArray()
                 };
             }
             catch (Exception ex)
