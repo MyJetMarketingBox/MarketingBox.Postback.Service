@@ -54,11 +54,6 @@ namespace MarketingBox.Postback.Service.Postgres
             modelBuilder.Entity<AffiliateReferenceLogEntity>().HasIndex(e => e.AffiliateId);
             modelBuilder.Entity<AffiliateReferenceLogEntity>().HasIndex(e => e.Operation);
             modelBuilder.Entity<AffiliateReferenceLogEntity>().HasIndex(e => e.Date);
-            modelBuilder.Entity<AffiliateReferenceLogEntity>()
-                .HasOne<Reference>()
-                .WithMany()
-                .HasForeignKey(e => e.ReferenceId)
-                .OnDelete(DeleteBehavior.NoAction);
         }
         
 
