@@ -10,7 +10,7 @@ namespace MarketingBox.Postback.Service.Grpc
     public interface IEventReferenceLogService
     {
         [OperationContract]
-        Task<Response<IReadOnlyCollection<EventReferenceLog>>> GetLogsAsync(ByAffiliateIdRequest request);
+        Task<Response<IReadOnlyCollection<EventReferenceLog>>> GetLogsAsync(ByAffiliateIdPaginatedRequest request);
 
         [OperationContract]
         Task<Response<IReadOnlyCollection<EventReferenceLog>>> SearchLogsAsync(FilterLogsRequest request);

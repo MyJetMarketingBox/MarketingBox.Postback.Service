@@ -39,15 +39,42 @@ namespace MarketingBox.Postback.Service.Repositories
 
         }
 
-        public async Task<EventReferenceLog[]> GetAsync(long affiliateId)
+        public async Task<EventReferenceLog[]> GetAsync(ByAffiliateIdPaginatedRequest request)
         {
             try
             {
                 await using var context = _factory.Create();
-                var result = context.EventReferenceLogs.Where(x => x.AffiliateId == affiliateId).ToArray();
+                var query = context.EventReferenceLogs.AsQueryable();
+                query = query.Where(x=> x.AffiliateId == request.AffiliateId);
+                
+                var limit = request.Take <= 0 ? 1000 : request.Take;
+                if (request.Asc)
+                {
+                    if (request.Cursor != null)
+                    {
+                        query = query.Where(x => x.Id > request.Cursor);
+                    }
+
+                    query = query.OrderBy(x => x.Id);
+                }
+                else
+                {
+                    if (request.Cursor != null)
+                    {
+                        query = query.Where(x => x.Id < request.Cursor);
+                    }
+
+                    query = query.OrderByDescending(x => x.Id);
+                }
+
+                query = query.Take(limit);
+
+                await query.LoadAsync();
+                var result = query.ToArray();
+                
                 if (result.Length == 0)
                 {
-                    throw new NotFoundException(nameof(affiliateId), affiliateId);
+                    throw new NotFoundException(nameof(request.AffiliateId), request.AffiliateId);
                 }
                 return result;
             }

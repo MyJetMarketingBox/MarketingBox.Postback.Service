@@ -25,13 +25,13 @@ namespace MarketingBox.Postback.Service.Services
             _logger = logger;
             _eventReferenceLogger = eventReferenceLogger;
         }
-        public async Task<Response<IReadOnlyCollection<EventReferenceLog>>> GetLogsAsync(ByAffiliateIdRequest request)
+        public async Task<Response<IReadOnlyCollection<EventReferenceLog>>> GetLogsAsync(ByAffiliateIdPaginatedRequest request)
         {
             try
             {
                 _logger.LogInformation("Getting logs for affiliate: {AffiliateId}", request.AffiliateId);
 
-                var res = await _eventReferenceLogger.GetAsync(request.AffiliateId);
+                var res = await _eventReferenceLogger.GetAsync(request);
 
                 return new Response<IReadOnlyCollection<EventReferenceLog>>
                 {
