@@ -1,8 +1,7 @@
-﻿using MarketingBox.Postback.Service.Domain.Models;
-using System;
+﻿using System;
 using System.Runtime.Serialization;
 
-namespace MarketingBox.Postback.Service.Grpc.Models
+namespace MarketingBox.Postback.Service.Domain.Models
 {
     [DataContract]
     public class FilterLogsRequest

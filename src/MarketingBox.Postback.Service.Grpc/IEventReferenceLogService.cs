@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ServiceModel;
 using System.Threading.Tasks;
+using MarketingBox.Postback.Service.Domain.Models;
 
 namespace MarketingBox.Postback.Service.Grpc
 {

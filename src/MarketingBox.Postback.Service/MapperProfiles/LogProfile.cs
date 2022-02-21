@@ -9,8 +9,7 @@ namespace MarketingBox.Postback.Service.MapperProfiles
         public LogProfile()
         {
             CreateMap<EventReferenceLog, EventReferenceLogEntity>();
-            CreateMap<Grpc.Models.FilterLogsRequest, Domain.FilterLogsRequest>();
-            CreateMap<EventReferenceLogEntity, Grpc.Models.EventReferenceLog> ();
+            CreateMap<EventReferenceLogEntity, EventReferenceLog> ();
         }
     }
 }

@@ -47,7 +47,7 @@ namespace MarketingBox.Postback.Service.Services
             }
         }
 
-        public async Task<Response<ReferenceResponse>> GetReferenceAsync(ByAffiliateIdRequest request)
+        public async Task<Response<Reference>> GetReferenceAsync(ByAffiliateIdRequest request)
         {
             try
             {
@@ -57,19 +57,19 @@ namespace MarketingBox.Postback.Service.Services
 
                 await _loggerRepository.CreateAsync(request.AffiliateId, OperationType.Get);
 
-                return new Response<ReferenceResponse>
+                return new Response<Reference>
                 {
                     StatusCode = StatusCode.Ok,
-                    Data = _mapper.Map<ReferenceResponse>(res)
+                    Data = _mapper.Map<Reference>(res)
                 };
             }
             catch(Exception ex)
             {
-                return ex.FailedResponse<ReferenceResponse>();
+                return ex.FailedResponse<Reference>();
             }
         }
 
-        public async Task<Response<ReferenceResponse>> CreateReferenceAsync(FullReferenceRequest request)
+        public async Task<Response<Reference>> CreateReferenceAsync(Reference request)
         {
             try
             {
@@ -79,19 +79,19 @@ namespace MarketingBox.Postback.Service.Services
 
                 await _loggerRepository.CreateAsync(request.AffiliateId, OperationType.Create);
 
-                return new Response<ReferenceResponse>
+                return new Response<Reference>
                 {
                     StatusCode = StatusCode.Ok,
-                    Data = _mapper.Map<ReferenceResponse>(res)
+                    Data = _mapper.Map<Reference>(res)
                 };
             }
             catch(Exception ex)
             {
-                return ex.FailedResponse<ReferenceResponse>();
+                return ex.FailedResponse<Reference>();
             }
         }
 
-        public async Task<Response<ReferenceResponse>> UpdateReferenceAsync(FullReferenceRequest request)
+        public async Task<Response<Reference>> UpdateReferenceAsync(Reference request)
         {
             try
             {
@@ -101,15 +101,15 @@ namespace MarketingBox.Postback.Service.Services
 
                 await _loggerRepository.CreateAsync(request.AffiliateId, OperationType.Update);
 
-                return new Response<ReferenceResponse>
+                return new Response<Reference>
                 {
                     StatusCode = StatusCode.Ok,
-                    Data = _mapper.Map<ReferenceResponse>(res)
+                    Data = _mapper.Map<Reference>(res)
                 };
             }
             catch(Exception ex)
             {
-                return ex.FailedResponse<ReferenceResponse>();
+                return ex.FailedResponse<Reference>();
             }
         }
     }

@@ -8,7 +8,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MarketingBox.Postback.Service.Domain.Models;
 using MarketingBox.Postback.Service.Helper;
+using FilterLogsRequest = MarketingBox.Postback.Service.Domain.Models.FilterLogsRequest;
 
 namespace MarketingBox.Postback.Service.Services
 {
@@ -48,13 +50,13 @@ namespace MarketingBox.Postback.Service.Services
         }
 
 
-        public async Task<Response<IReadOnlyCollection<EventReferenceLog>>> SearchLogsAsync(Grpc.Models.FilterLogsRequest request)
+        public async Task<Response<IReadOnlyCollection<EventReferenceLog>>> SearchLogsAsync(FilterLogsRequest request)
         {
             try
             {
                 _logger.LogInformation("Searching logs by filter: {FilterLogsRequest}", JsonConvert.SerializeObject(request));
 
-                var res = await _eventReferenceLogger.SearchAsync(_mapper.Map<Domain.FilterLogsRequest>(request));
+                var res = await _eventReferenceLogger.SearchAsync(request);
 
                 return new Response<IReadOnlyCollection<EventReferenceLog>>
                 {

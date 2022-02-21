@@ -9,5 +9,6 @@ namespace MarketingBox.Postback.Service.Postgres.Entities
         public long AffiliateId { get; set; }
         public DateTime Date { get; set; }
         public OperationType Operation { get; set; }
+        public long? ReferenceId { get; set; }
     }
 }
