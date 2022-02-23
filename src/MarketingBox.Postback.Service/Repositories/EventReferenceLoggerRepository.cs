@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using MarketingBox.Postback.Service.Domain.Exceptions;
+using MarketingBox.Sdk.Common.Exceptions;
 
 namespace MarketingBox.Postback.Service.Repositories
 {
@@ -105,7 +105,7 @@ namespace MarketingBox.Postback.Service.Repositories
                 }
                 if (request.ResponseStatus.HasValue)
                 {
-                    query = query.Where(x => x.ResponseStatus == request.ResponseStatus.Value);
+                    query = query.Where(x => x.PostbackResponseStatus == request.ResponseStatus.Value);
                 }
                 if (request.FromDate.HasValue)
                 {
@@ -139,8 +139,13 @@ namespace MarketingBox.Postback.Service.Repositories
                 query = query.Take(limit);
 
                 await query.LoadAsync();
+                var result = query.ToArray();
+                if (result.Length == 0)
+                {
+                    throw new NotFoundException("There is no entity for such request.");
+                }
 
-                return query.ToArray();
+                return result;
             }
             catch (Exception ex)
             {

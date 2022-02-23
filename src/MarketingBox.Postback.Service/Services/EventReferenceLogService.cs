@@ -1,6 +1,5 @@
 ﻿using MarketingBox.Postback.Service.Domain;
 using MarketingBox.Postback.Service.Grpc;
-using MarketingBox.Postback.Service.Grpc.Models;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
@@ -8,8 +7,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MarketingBox.Postback.Service.Domain.Models;
-using MarketingBox.Postback.Service.Helper;
+using MarketingBox.Sdk.Common.Extensions;
+using MarketingBox.Sdk.Common.Models.Grpc;
 using FilterLogsRequest = MarketingBox.Postback.Service.Domain.Models.FilterLogsRequest;
+using ResponseStatus = MarketingBox.Sdk.Common.Models.Grpc.ResponseStatus;
 
 namespace MarketingBox.Postback.Service.Services
 {
@@ -25,7 +26,7 @@ namespace MarketingBox.Postback.Service.Services
             _logger = logger;
             _eventReferenceLogger = eventReferenceLogger;
         }
-        public async Task<Response<IReadOnlyCollection<EventReferenceLog>>> GetLogsAsync(ByAffiliateIdPaginatedRequest request)
+        public async Task<Response<IReadOnlyCollection<EventReferenceLog>>> GetAsync(ByAffiliateIdPaginatedRequest request)
         {
             try
             {
@@ -35,7 +36,7 @@ namespace MarketingBox.Postback.Service.Services
 
                 return new Response<IReadOnlyCollection<EventReferenceLog>>
                 {
-                    StatusCode = StatusCode.Ok,
+                    Status = ResponseStatus.Ok,
                     Data = res.ToArray()
                 };
             }
@@ -46,7 +47,7 @@ namespace MarketingBox.Postback.Service.Services
         }
 
 
-        public async Task<Response<IReadOnlyCollection<EventReferenceLog>>> SearchLogsAsync(FilterLogsRequest request)
+        public async Task<Response<IReadOnlyCollection<EventReferenceLog>>> SearchAsync(FilterLogsRequest request)
         {
             try
             {
@@ -56,7 +57,7 @@ namespace MarketingBox.Postback.Service.Services
 
                 return new Response<IReadOnlyCollection<EventReferenceLog>>
                 {
-                    StatusCode = StatusCode.Ok,
+                    Status = ResponseStatus.Ok,
                     Data = res.ToArray()
                 };
             }

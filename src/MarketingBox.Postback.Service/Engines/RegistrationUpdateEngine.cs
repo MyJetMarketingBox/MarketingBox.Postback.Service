@@ -61,7 +61,7 @@ namespace MarketingBox.Postback.Service.Engines
                     return;
                 }
 
-                var referenceEntity = await _repository.GetReferenceAsync(affiliateId);
+                var referenceEntity = await _repository.GetAsync(affiliateId);
 
                 var log = new EventReferenceLog
                 {
@@ -103,9 +103,9 @@ namespace MarketingBox.Postback.Service.Engines
                 }
 
                 log.PostbackReference = postbackReference;
-                log.ResponseStatus = postbackResponse is {StatusCode: HttpStatusCode.OK}
-                    ? ResponseStatus.Ok
-                    : ResponseStatus.Failed;
+                log.PostbackResponseStatus = postbackResponse is {StatusCode: HttpStatusCode.OK}
+                    ? PostbackResponseStatus.Ok
+                    : PostbackResponseStatus.Failed;
                 log.PostbackResponse = JsonConvert.SerializeObject(postbackResponse);
                 log.HttpQueryType = referenceEntity.HttpQueryType;
                 log.Date = DateTime.UtcNow;

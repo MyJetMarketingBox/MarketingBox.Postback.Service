@@ -1,7 +1,7 @@
 using System.ServiceModel;
 using System.Threading.Tasks;
 using MarketingBox.Postback.Service.Domain.Models;
-using MarketingBox.Postback.Service.Grpc.Models;
+using MarketingBox.Sdk.Common.Models.Grpc;
 
 namespace MarketingBox.Postback.Service.Grpc
 {
@@ -9,15 +9,15 @@ namespace MarketingBox.Postback.Service.Grpc
     public interface IPostbackService
     {
         [OperationContract]
-        Task<Response<Reference>> GetReferenceAsync(ByAffiliateIdRequest request);
+        Task<Response<Reference>> GetAsync(ByAffiliateIdRequest request);
 
         [OperationContract]
-        Task<Response<Reference>> CreateReferenceAsync(Reference request);
+        Task<Response<Reference>> CreateAsync(Reference request);
 
         [OperationContract]
-        Task<Response<Reference>> UpdateReferenceAsync(Reference request);
+        Task<Response<Reference>> UpdateAsync(Reference request);
 
         [OperationContract]
-        Task<Response<bool>> DeleteReferenceAsync(ByAffiliateIdRequest request);
+        Task<Response<bool>> DeleteAsync(ByAffiliateIdRequest request);
     }
 }

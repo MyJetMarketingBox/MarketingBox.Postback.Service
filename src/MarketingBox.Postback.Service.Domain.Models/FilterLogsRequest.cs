@@ -31,6 +31,6 @@ namespace MarketingBox.Postback.Service.Domain.Models
         public bool Asc { get; set; }
         
         [DataMember(Order = 9)] 
-        public ResponseStatus? ResponseStatus { get; set; }
+        public PostbackResponseStatus? ResponseStatus { get; set; }
     }
 }

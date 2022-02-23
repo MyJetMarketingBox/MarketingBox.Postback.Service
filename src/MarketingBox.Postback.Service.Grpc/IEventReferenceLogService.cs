@@ -1,8 +1,8 @@
-﻿using MarketingBox.Postback.Service.Grpc.Models;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ServiceModel;
 using System.Threading.Tasks;
 using MarketingBox.Postback.Service.Domain.Models;
+using MarketingBox.Sdk.Common.Models.Grpc;
 
 namespace MarketingBox.Postback.Service.Grpc
 {
@@ -10,9 +10,9 @@ namespace MarketingBox.Postback.Service.Grpc
     public interface IEventReferenceLogService
     {
         [OperationContract]
-        Task<Response<IReadOnlyCollection<EventReferenceLog>>> GetLogsAsync(ByAffiliateIdPaginatedRequest request);
+        Task<Response<IReadOnlyCollection<EventReferenceLog>>> GetAsync(ByAffiliateIdPaginatedRequest request);
 
         [OperationContract]
-        Task<Response<IReadOnlyCollection<EventReferenceLog>>> SearchLogsAsync(FilterLogsRequest request);
+        Task<Response<IReadOnlyCollection<EventReferenceLog>>> SearchAsync(FilterLogsRequest request);
     }
 }

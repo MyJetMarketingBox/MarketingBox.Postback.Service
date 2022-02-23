@@ -28,7 +28,7 @@ namespace MarketingBox.Postback.Service.Domain.Models
         public string PostbackResponse { get; set; }
         
         [DataMember(Order = 8)]
-        public ResponseStatus ResponseStatus { get; set; }
+        public PostbackResponseStatus PostbackResponseStatus { get; set; }
         
         [DataMember(Order = 9)]
         public DateTime Date { get; set; }
