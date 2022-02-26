@@ -38,6 +38,10 @@ namespace MarketingBox.Postback.Service.Modules
                 .As<IRegistrationUpdateEngine>()
                 .SingleInstance();
             
+            builder.RegisterType<AffiliateRepository>()
+                .As<IAffiliateRepository>()
+                .SingleInstance();
+            
             builder.RegisterType<PostbackLogsCacheEngine>()
                 .As<IStartable>()
                 .As<IPostbackLogsCacheEngine>()

@@ -14,6 +14,19 @@ namespace MarketingBox.Postback.Service.Postgres.Migrations
                 name: "postback-service");
 
             migrationBuilder.CreateTable(
+                name: "affiliates",
+                schema: "postback-service",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_affiliates", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "affiliatereferencelog",
                 schema: "postback-service",
                 columns: table => new
@@ -22,11 +35,19 @@ namespace MarketingBox.Postback.Service.Postgres.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     AffiliateId = table.Column<long>(type: "bigint", nullable: false),
                     Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Operation = table.Column<int>(type: "integer", nullable: false)
+                    Operation = table.Column<int>(type: "integer", nullable: false),
+                    ReferenceId = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_affiliatereferencelog", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_affiliatereferencelog_affiliates_AffiliateId",
+                        column: x => x.AffiliateId,
+                        principalSchema: "postback-service",
+                        principalTable: "affiliates",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -37,19 +58,25 @@ namespace MarketingBox.Postback.Service.Postgres.Migrations
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     AffiliateId = table.Column<long>(type: "bigint", nullable: false),
+                    RegistrationUId = table.Column<string>(type: "text", nullable: true),
                     EventType = table.Column<int>(type: "integer", nullable: false),
                     HttpQueryType = table.Column<int>(type: "integer", nullable: false),
-                    PostbackReference = table.Column<string>(type: "text", nullable: true),
-                    RequestBody = table.Column<string>(type: "text", nullable: true),
-                    PostbackResponse = table.Column<string>(type: "text", nullable: true),
-                    Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    RegistrationUId = table.Column<string>(type: "text", nullable: true),
                     EventMessage = table.Column<string>(type: "text", nullable: true),
-                    ResponseStatus = table.Column<int>(type: "integer", nullable: false)
+                    PostbackReference = table.Column<string>(type: "text", nullable: true),
+                    PostbackResponse = table.Column<string>(type: "text", nullable: true),
+                    PostbackResponseStatus = table.Column<int>(type: "integer", nullable: false),
+                    Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_eventreferencelog", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_eventreferencelog_affiliates_AffiliateId",
+                        column: x => x.AffiliateId,
+                        principalSchema: "postback-service",
+                        principalTable: "affiliates",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -69,6 +96,13 @@ namespace MarketingBox.Postback.Service.Postgres.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_reference", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_reference_affiliates_AffiliateId",
+                        column: x => x.AffiliateId,
+                        principalSchema: "postback-service",
+                        principalTable: "affiliates",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -114,10 +148,10 @@ namespace MarketingBox.Postback.Service.Postgres.Migrations
                 column: "HttpQueryType");
 
             migrationBuilder.CreateIndex(
-                name: "IX_eventreferencelog_ResponseStatus",
+                name: "IX_eventreferencelog_PostbackResponseStatus",
                 schema: "postback-service",
                 table: "eventreferencelog",
-                column: "ResponseStatus");
+                column: "PostbackResponseStatus");
 
             migrationBuilder.CreateIndex(
                 name: "IX_reference_AffiliateId",
@@ -139,6 +173,10 @@ namespace MarketingBox.Postback.Service.Postgres.Migrations
 
             migrationBuilder.DropTable(
                 name: "reference",
+                schema: "postback-service");
+
+            migrationBuilder.DropTable(
+                name: "affiliates",
                 schema: "postback-service");
         }
     }

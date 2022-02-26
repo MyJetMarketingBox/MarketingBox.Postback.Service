@@ -110,7 +110,8 @@ namespace MarketingBox.Postback.Service.Repositories
             try
             {
                 await using var context = _factory.Create();
-                var result = await context.References.FirstOrDefaultAsync(x => x.AffiliateId == affiliateId);
+                var result = await context.References.Include(x => x.Affiliate)
+                    .FirstOrDefaultAsync(x => x.AffiliateId == affiliateId);
 
                 if (result is null)
                 {

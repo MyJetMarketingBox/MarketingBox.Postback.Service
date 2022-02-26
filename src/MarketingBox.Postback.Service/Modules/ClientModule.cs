@@ -1,4 +1,6 @@
 ﻿using Autofac;
+using MarketingBox.Affiliate.Service.Client;
+using MarketingBox.Affiliate.Service.Grpc;
 using MarketingBox.Registration.Service.Messages.Registrations;
 using MyJetWallet.Sdk.ServiceBus;
 using MyServiceBus.Abstractions;
@@ -18,6 +20,8 @@ namespace MarketingBox.Postback.Service.Modules
                 RegistrationUpdateMessage.Topic,
                 "MarketingBox-Postback-Service",
                 TopicQueueType.PermanentWithSingleConnection);
+            
+            builder.RegisterAffiliateServiceClient(Program.Settings.AffiliateServiceUrl);
         }
     }
 }

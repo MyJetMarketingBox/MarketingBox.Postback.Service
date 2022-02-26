@@ -19,5 +19,8 @@ namespace MarketingBox.Postback.Service.Settings
 
         [YamlProperty("PostbackService.MarketingBoxServiceBusHostPort")]
         public string MarketingBoxServiceBusHostPort { get; set; }
+        
+        [YamlProperty("PostbackService.AffiliateServiceUrl")]
+        public string AffiliateServiceUrl { get; set; }
     }
 }

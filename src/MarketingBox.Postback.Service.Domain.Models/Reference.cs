@@ -25,5 +25,8 @@ namespace MarketingBox.Postback.Service.Domain.Models
         
         [DataMember(Order = 7)]
         public long Id { get; set; }
+        
+        [DataMember(Order = 8)]
+        public Affiliate Affiliate { get; set; }
     }
 }
