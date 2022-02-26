@@ -44,8 +44,10 @@ namespace MarketingBox.Postback.Service.Repositories
             try
             {
                 await using var context = _factory.Create();
-                var query = context.EventReferenceLogs.AsQueryable();
-                query = query.Where(x => x.AffiliateId == request.AffiliateId).Include(x => x.Affiliate);
+                var query =  context.EventReferenceLogs
+                    .Where(x => x.AffiliateId == request.AffiliateId)
+                    .Include(x => x.Affiliate)
+                    .AsQueryable();
                 
                 var limit = request.Take <= 0 ? 1000 : request.Take;
                 if (request.Asc)
@@ -90,7 +92,9 @@ namespace MarketingBox.Postback.Service.Repositories
             try
             {
                 await using var context = _factory.Create();
-                var query = context.EventReferenceLogs.AsQueryable();
+                var query = context.EventReferenceLogs
+                    .Include(x => x.Affiliate)
+                    .AsQueryable();
                 if(request.AffiliateId.HasValue)
                 {
                     query = query.Where(x=> x.AffiliateId == request.AffiliateId.Value);
