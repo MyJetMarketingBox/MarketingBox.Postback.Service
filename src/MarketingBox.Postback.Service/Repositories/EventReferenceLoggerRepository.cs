@@ -128,7 +128,7 @@ namespace MarketingBox.Postback.Service.Repositories
                 var limit = request.Take <= 0 ? 1000 : request.Take;
                 if (request.Asc)
                 {
-                    if (request.Cursor != null)
+                    if (request.Cursor.HasValue)
                     {
                         query = query.Where(x => x.Id > request.Cursor);
                     }
