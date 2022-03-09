@@ -137,9 +137,10 @@ namespace MarketingBox.Postback.Service.Repositories
                 }
                 else
                 {
-                    query = request.Cursor != null
-                        ? query.Where(x => x.Id < request.Cursor)
-                        : query.Where(x => x.Id < long.MaxValue);
+                    if (request.Cursor.HasValue)
+                    { 
+                        query = query.Where(x => x.Id < request.Cursor);
+                    }
 
                     query = query.OrderByDescending(x => x.Id);
                 }
