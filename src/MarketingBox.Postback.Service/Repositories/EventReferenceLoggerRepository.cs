@@ -11,7 +11,7 @@ using MarketingBox.Sdk.Common.Exceptions;
 
 namespace MarketingBox.Postback.Service.Repositories
 {
-    public class EventReferenceLoggerRepository : 
+    public class EventReferenceLoggerRepository :
         RepositoryBase<EventReferenceLoggerRepository>,
         IEventReferenceLoggerRepository
     {
@@ -29,14 +29,14 @@ namespace MarketingBox.Postback.Service.Repositories
                 await context.EventReferenceLogs.AddAsync(eventReferenceLog);
                 await context.SaveChangesAsync();
 
-                _logger.LogInformation("Log {eventReferenceLog} was created.", JsonConvert.SerializeObject(eventReferenceLog));
+                _logger.LogInformation("Log {eventReferenceLog} was created.",
+                    JsonConvert.SerializeObject(eventReferenceLog));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, ex.Message);
                 throw;
             }
-
         }
 
         public async Task<EventReferenceLog[]> GetAsync(ByAffiliateIdPaginatedRequest request)
@@ -44,11 +44,11 @@ namespace MarketingBox.Postback.Service.Repositories
             try
             {
                 await using var context = _factory.Create();
-                var query =  context.EventReferenceLogs
+                var query = context.EventReferenceLogs
                     .Where(x => x.AffiliateId == request.AffiliateId)
                     .Include(x => x.Affiliate)
                     .AsQueryable();
-                
+
                 var limit = request.Take <= 0 ? 1000 : request.Take;
                 if (request.Asc)
                 {
@@ -61,10 +61,9 @@ namespace MarketingBox.Postback.Service.Repositories
                 }
                 else
                 {
-                    if (request.Cursor != null)
-                    {
-                        query = query.Where(x => x.Id < request.Cursor);
-                    }
+                    query = request.Cursor != null
+                        ? query.Where(x => x.Id < request.Cursor)
+                        : query.Where(x => x.Id < long.MaxValue);
 
                     query = query.OrderByDescending(x => x.Id);
                 }
@@ -73,11 +72,12 @@ namespace MarketingBox.Postback.Service.Repositories
 
                 await query.LoadAsync();
                 var result = query.ToArray();
-                
+
                 if (result.Length == 0)
                 {
                     throw new NotFoundException(nameof(request.AffiliateId), request.AffiliateId);
                 }
+
                 return result;
             }
             catch (Exception ex)
@@ -95,26 +95,31 @@ namespace MarketingBox.Postback.Service.Repositories
                 var query = context.EventReferenceLogs
                     .Include(x => x.Affiliate)
                     .AsQueryable();
-                if(request.AffiliateId.HasValue)
+                if (request.AffiliateId.HasValue)
                 {
-                    query = query.Where(x=> x.AffiliateId == request.AffiliateId.Value);
+                    query = query.Where(x => x.AffiliateId == request.AffiliateId.Value);
                 }
+
                 if (request.EventType.HasValue)
                 {
                     query = query.Where(x => x.EventType == request.EventType.Value);
                 }
+
                 if (request.HttpQueryType.HasValue)
                 {
                     query = query.Where(x => x.HttpQueryType == request.HttpQueryType.Value);
                 }
+
                 if (request.ResponseStatus.HasValue)
                 {
                     query = query.Where(x => x.PostbackResponseStatus == request.ResponseStatus.Value);
                 }
+
                 if (request.FromDate.HasValue)
                 {
                     query = query.Where(x => x.Date >= request.FromDate.Value);
                 }
+
                 if (request.ToDate.HasValue)
                 {
                     query = query.Where(x => x.Date <= request.ToDate.Value.Add(new TimeSpan(23, 59, 59)));
@@ -132,10 +137,9 @@ namespace MarketingBox.Postback.Service.Repositories
                 }
                 else
                 {
-                    if (request.Cursor != null)
-                    {
-                        query = query.Where(x => x.Id < request.Cursor);
-                    }
+                    query = request.Cursor != null
+                        ? query.Where(x => x.Id < request.Cursor)
+                        : query.Where(x => x.Id < long.MaxValue);
 
                     query = query.OrderByDescending(x => x.Id);
                 }
