@@ -1,12 +1,12 @@
 using System.Runtime.Serialization;
 
-namespace MarketingBox.Postback.Service.Domain.Models
+namespace MarketingBox.Postback.Service.Domain.Models.Requests
 {
     [DataContract]
     public class ByAffiliateIdPaginatedRequest
     {
         [DataMember(Order = 1)]
-        public long AffiliateId { get; set; }
+        public long? AffiliateId { get; set; }
         
         [DataMember(Order = 2)] 
         public long? Cursor { get; set; }

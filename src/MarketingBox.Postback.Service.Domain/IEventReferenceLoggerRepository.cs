@@ -1,5 +1,6 @@
 ﻿using MarketingBox.Postback.Service.Domain.Models;
 using System.Threading.Tasks;
+using MarketingBox.Postback.Service.Domain.Models.Requests;
 
 namespace MarketingBox.Postback.Service.Domain
 {

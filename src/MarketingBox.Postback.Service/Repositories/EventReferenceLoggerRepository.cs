@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using MarketingBox.Postback.Service.Domain.Models.Requests;
 using MarketingBox.Sdk.Common.Exceptions;
 
 namespace MarketingBox.Postback.Service.Repositories
@@ -61,9 +62,10 @@ namespace MarketingBox.Postback.Service.Repositories
                 }
                 else
                 {
-                    query = request.Cursor != null
-                        ? query.Where(x => x.Id < request.Cursor)
-                        : query.Where(x => x.Id < long.MaxValue);
+                    if (request.Cursor != null)
+                    {
+                        query = query.Where(x => x.Id < request.Cursor);
+                    }
 
                     query = query.OrderByDescending(x => x.Id);
                 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Autofac;
 using MarketingBox.Postback.Service.Domain;
-using MarketingBox.Postback.Service.Domain.Models;
+using MarketingBox.Postback.Service.Domain.Models.Requests;
 using Microsoft.Extensions.Logging;
 
 namespace MarketingBox.Postback.Service.Engines

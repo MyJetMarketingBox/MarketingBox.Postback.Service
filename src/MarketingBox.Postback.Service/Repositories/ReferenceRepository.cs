@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Text.Json;
 using System.Threading.Tasks;
+using AutoMapper;
 using MarketingBox.Postback.Service.Domain;
 using MarketingBox.Postback.Service.Domain.Models;
+using MarketingBox.Postback.Service.Domain.Models.Requests;
 using MarketingBox.Postback.Service.Postgres;
 using MarketingBox.Sdk.Common.Exceptions;
 using Microsoft.EntityFrameworkCore;
@@ -13,10 +15,14 @@ namespace MarketingBox.Postback.Service.Repositories
 {
     public class ReferenceRepository : RepositoryBase<ReferenceRepository>, IReferenceRepository
     {
+        private readonly IMapper _mapper;
+
         public ReferenceRepository(
             ILogger<ReferenceRepository> logger,
-            DatabaseContextFactory factory) : base(logger,factory)
+            DatabaseContextFactory factory,
+            IMapper mapper) : base(logger,factory)
         {
+            _mapper = mapper;
         }
 
         public async Task<long> DeleteAsync(long affiliateId)
@@ -46,7 +52,7 @@ namespace MarketingBox.Postback.Service.Repositories
             }
         }
 
-        public async Task<Reference> CreateAsync(Reference request)
+        public async Task<Reference> CreateAsync(CreateOrUpdateReferenceRequest request)
         {
             try
             {
@@ -58,10 +64,10 @@ namespace MarketingBox.Postback.Service.Repositories
                 {
                     throw new AlreadyExistsException(nameof(request.AffiliateId), request.AffiliateId);
                 }
-                await context.References.AddAsync(request);
+                await context.References.AddAsync(_mapper.Map<Reference>(request));
                 await context.SaveChangesAsync();
 
-                return await GetAsync(request.AffiliateId);
+                return await GetAsync(request.AffiliateId.Value);
             }
             catch (Exception ex)
             {
@@ -73,7 +79,7 @@ namespace MarketingBox.Postback.Service.Repositories
             }
         }
 
-        public async Task<Reference> UpdateAsync(Reference request)
+        public async Task<Reference> UpdateAsync(CreateOrUpdateReferenceRequest request)
         {
             try
             {
@@ -89,11 +95,11 @@ namespace MarketingBox.Postback.Service.Repositories
                 entityToUpdate.DepositTGReference = request.DepositTGReference;
                 entityToUpdate.RegistrationReference = request.RegistrationReference;
                 entityToUpdate.RegistrationTGReference = request.RegistrationTGReference;
-                entityToUpdate.HttpQueryType = request.HttpQueryType;
+                entityToUpdate.HttpQueryType = request.HttpQueryType.Value;
 
                 await context.SaveChangesAsync();
 
-                return await GetAsync(request.AffiliateId);
+                return await GetAsync(request.AffiliateId.Value);
             }
             catch (Exception ex)
             {

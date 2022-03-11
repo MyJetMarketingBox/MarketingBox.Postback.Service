@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using MarketingBox.Postback.Service.Domain.Models;
+using MarketingBox.Postback.Service.Domain.Models.Requests;
 
 namespace MarketingBox.Postback.Service.Domain
 {
@@ -7,7 +8,7 @@ namespace MarketingBox.Postback.Service.Domain
     {
         Task<long> DeleteAsync(long affiliateId);
         Task<Reference> GetAsync(long affiliateId);
-        Task<Reference> CreateAsync(Reference request);
-        Task<Reference> UpdateAsync(Reference request);
+        Task<Reference> CreateAsync(CreateOrUpdateReferenceRequest request);
+        Task<Reference> UpdateAsync(CreateOrUpdateReferenceRequest request);
     }
 }

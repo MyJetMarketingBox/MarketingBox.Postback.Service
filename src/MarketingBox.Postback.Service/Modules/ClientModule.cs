@@ -1,6 +1,5 @@
 ﻿using Autofac;
 using MarketingBox.Affiliate.Service.Client;
-using MarketingBox.Affiliate.Service.Grpc;
 using MarketingBox.Registration.Service.Messages.Registrations;
 using MyJetWallet.Sdk.ServiceBus;
 using MyServiceBus.Abstractions;

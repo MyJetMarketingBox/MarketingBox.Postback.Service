@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using MarketingBox.Postback.Service.Domain;
 using MarketingBox.Postback.Service.Domain.Models;
+using MarketingBox.Postback.Service.Domain.Models.Requests;
 using MarketingBox.Postback.Service.Engines;
 using Moq;
 using Moq.AutoMock;

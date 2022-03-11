@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using ProtoBuf.Grpc.Client;
 using MarketingBox.Postback.Service.Client;
 using MarketingBox.Postback.Service.Domain.Models;
+using MarketingBox.Postback.Service.Domain.Models.Requests;
 using ResponseStatus = MarketingBox.Sdk.Common.Models.Grpc.ResponseStatus;
 
 namespace TestApp
