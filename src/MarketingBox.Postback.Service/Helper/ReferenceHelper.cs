@@ -1,4 +1,4 @@
-﻿using MarketingBox.Registration.Service.Messages.Registrations;
+﻿using MarketingBox.Registration.Service.Domain.Models.Registrations;
 
 namespace MarketingBox.Postback.Service.Helper
 {

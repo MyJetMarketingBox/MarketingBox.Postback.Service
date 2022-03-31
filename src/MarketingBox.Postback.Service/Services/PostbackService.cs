@@ -7,7 +7,6 @@ using System;
 using System.Text.Json;
 using FluentValidation;
 using MarketingBox.Affiliate.Service.Grpc;
-using MarketingBox.Affiliate.Service.Grpc.Models.Affiliates.Requests;
 using MarketingBox.Postback.Service.Domain.Models.Requests;
 using MarketingBox.Sdk.Common.Extensions;
 using MarketingBox.Sdk.Common.Models.Grpc;
@@ -95,7 +94,7 @@ namespace MarketingBox.Postback.Service.Services
                 await _createUpdateValidator.ValidateAndThrowAsync(request);
                 _logger.LogInformation("Getting information about affiliate with id {AffiliateId}",
                     request.AffiliateId);
-                var affiliateResponse = await _affiliateService.GetAsync(new AffiliateGetRequest
+                var affiliateResponse = await _affiliateService.GetAsync(new ()
                 {
                     AffiliateId = request.AffiliateId.Value
                 });
@@ -106,8 +105,8 @@ namespace MarketingBox.Postback.Service.Services
                 await _affiliateRepository.CreateAsync(
                     new Domain.Models.Affiliate
                     {
-                        Id = affiliate.AffiliateId,
-                        Name = affiliate.GeneralInfo.Username
+                        Id = affiliate.Id,
+                        Name = affiliate.Username
                     });
 
                 _logger.LogInformation("Saving reference: {SaveReferenceRequest}", JsonSerializer.Serialize(request));

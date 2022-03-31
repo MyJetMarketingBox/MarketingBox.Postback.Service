@@ -1,7 +1,6 @@
 ﻿using MarketingBox.Postback.Service.Domain;
 using MarketingBox.Postback.Service.Domain.Models;
 using MarketingBox.Postback.Service.Helper;
-using MarketingBox.Registration.Service.Domain.Registrations;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
@@ -9,6 +8,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using MarketingBox.Registration.Service.Domain.Models.Common;
 using MarketingBox.Registration.Service.Messages.Registrations;
 
 namespace MarketingBox.Postback.Service.Engines
@@ -39,7 +39,7 @@ namespace MarketingBox.Postback.Service.Engines
                 HttpResponseMessage postbackResponse;
                 var affiliateId = message.RouteInfo.AffiliateId;
                 var additionalInfo = message.AdditionalInfo;
-                var registrationUId = message.GeneralInfo.RegistrationUId;
+                var registrationUId = message.GeneralInfoInternal.RegistrationUid;
                 EventType eventType;
                 switch (message.RouteInfo.Status)
                 {
