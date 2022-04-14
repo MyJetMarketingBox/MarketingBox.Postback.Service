@@ -34,23 +34,26 @@ namespace MarketingBox.Postback.Service.Services
             _paginatedValidator = paginatedValidator;
             _filterLogsValidator = filterLogsValidator;
         }
-        public async Task<Response<IReadOnlyCollection<EventReferenceLog>>> GetAsync(ByAffiliateIdPaginatedRequest request)
+
+        public async Task<Response<IReadOnlyCollection<EventReferenceLog>>> GetAsync(
+            ByAffiliateIdPaginatedRequest request)
         {
             try
             {
-                await _paginatedValidator.ValidateAndThrowAsync(request);
-                
+                request.ValidateEntity();
+
                 _logger.LogInformation("Getting logs for affiliate: {AffiliateId}", request.AffiliateId);
 
-                var res = await _eventReferenceLogger.GetAsync(request);
+                var (res, total) = await _eventReferenceLogger.GetAsync(request);
 
                 return new Response<IReadOnlyCollection<EventReferenceLog>>
                 {
                     Status = ResponseStatus.Ok,
-                    Data = res.ToArray()
+                    Data = res,
+                    Total = total
                 };
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return ex.FailedResponse<IReadOnlyCollection<EventReferenceLog>>();
             }
@@ -61,16 +64,18 @@ namespace MarketingBox.Postback.Service.Services
         {
             try
             {
-                await _filterLogsValidator.ValidateAndThrowAsync(request);
-                
-                _logger.LogInformation("Searching logs by filter: {FilterLogsRequest}", JsonConvert.SerializeObject(request));
+                request.ValidateEntity();
 
-                var res = await _eventReferenceLogger.SearchAsync(request);
+                _logger.LogInformation("Searching logs by filter: {FilterLogsRequest}",
+                    JsonConvert.SerializeObject(request));
+
+                var (res, total) = await _eventReferenceLogger.SearchAsync(request);
 
                 return new Response<IReadOnlyCollection<EventReferenceLog>>
                 {
                     Status = ResponseStatus.Ok,
-                    Data = res.ToArray()
+                    Data = res,
+                    Total = total
                 };
             }
             catch (Exception ex)

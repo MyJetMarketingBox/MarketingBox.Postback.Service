@@ -39,7 +39,7 @@ namespace MarketingBox.Postback.Service.Engines
                     .GetAwaiter()
                     .GetResult();
 
-                _cache = result
+                _cache = result.Item1
                     .Select(p => new PostbackLogsCacheModel(p.RegistrationUId, p.EventType))
                     .Reverse()
                     .ToHashSet();

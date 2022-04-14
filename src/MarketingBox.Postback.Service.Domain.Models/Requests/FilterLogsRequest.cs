@@ -1,36 +1,31 @@
 ﻿using System;
 using System.Runtime.Serialization;
+using MarketingBox.Sdk.Common.Attributes;
+using MarketingBox.Sdk.Common.Models;
 
 namespace MarketingBox.Postback.Service.Domain.Models.Requests
 {
     [DataContract]
-    public class FilterLogsRequest
+    public class FilterLogsRequest : ValidatableEntity
     {
-        [DataMember(Order = 1)]
-        public long? AffiliateId { get; set; }
+        [DataMember(Order = 1)] public long? AffiliateId { get; set; }
 
-        [DataMember(Order = 2)]
-        public EventType? EventType { get; set; }
+        [DataMember(Order = 2)] public EventType? EventType { get; set; }
 
-        [DataMember(Order = 3)]
-        public HttpQueryType? HttpQueryType { get; set; }
+        [DataMember(Order = 3)] public HttpQueryType? HttpQueryType { get; set; }
 
-        [DataMember(Order = 4)]
-        public DateTime? FromDate { get; set; }
+        [DataMember(Order = 4)] public DateTime? FromDate { get; set; }
 
-        [DataMember(Order = 5)]
-        public DateTime? ToDate { get; set; }
+        [DataMember(Order = 5)] public DateTime? ToDate { get; set; }
 
-        [DataMember(Order = 6)] 
+        [DataMember(Order = 6), AdvancedCompare(ComparisonType.GreaterThanOrEqual, 1)]
         public long? Cursor { get; set; }
 
-        [DataMember(Order = 7)] 
-        public int Take { get; set; }
+        [DataMember(Order = 7), AdvancedCompare(ComparisonType.GreaterThanOrEqual, 1)]
+        public int? Take { get; set; }
 
-        [DataMember(Order = 8)] 
-        public bool Asc { get; set; }
-        
-        [DataMember(Order = 9)] 
-        public PostbackResponseStatus? ResponseStatus { get; set; }
+        [DataMember(Order = 8)] public bool Asc { get; set; }
+
+        [DataMember(Order = 9)] public PostbackResponseStatus? ResponseStatus { get; set; }
     }
 }

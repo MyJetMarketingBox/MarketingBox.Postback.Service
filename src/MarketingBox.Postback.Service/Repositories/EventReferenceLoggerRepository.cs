@@ -40,7 +40,7 @@ namespace MarketingBox.Postback.Service.Repositories
             }
         }
 
-        public async Task<EventReferenceLog[]> GetAsync(ByAffiliateIdPaginatedRequest request)
+        public async Task<(EventReferenceLog[],int)> GetAsync(ByAffiliateIdPaginatedRequest request)
         {
             try
             {
@@ -50,7 +50,7 @@ namespace MarketingBox.Postback.Service.Repositories
                     .Include(x => x.Affiliate)
                     .AsQueryable();
 
-                var limit = request.Take <= 0 ? 1000 : request.Take;
+                var total = query.Count();
                 if (request.Asc)
                 {
                     if (request.Cursor != null)
@@ -70,17 +70,15 @@ namespace MarketingBox.Postback.Service.Repositories
                     query = query.OrderByDescending(x => x.Id);
                 }
 
-                query = query.Take(limit);
+                if (request.Take.HasValue)
+                {
+                    query = query.Take(request.Take.Value);   
+                }
 
                 await query.LoadAsync();
                 var result = query.ToArray();
 
-                if (result.Length == 0)
-                {
-                    throw new NotFoundException(nameof(request.AffiliateId), request.AffiliateId);
-                }
-
-                return result;
+                return (result, total);
             }
             catch (Exception ex)
             {
@@ -89,7 +87,7 @@ namespace MarketingBox.Postback.Service.Repositories
             }
         }
 
-        public async Task<EventReferenceLog[]> SearchAsync(FilterLogsRequest request)
+        public async Task<(EventReferenceLog[],int)> SearchAsync(FilterLogsRequest request)
         {
             try
             {
@@ -127,7 +125,7 @@ namespace MarketingBox.Postback.Service.Repositories
                     query = query.Where(x => x.Date <= request.ToDate.Value.Add(new TimeSpan(23, 59, 59)));
                 }
 
-                var limit = request.Take <= 0 ? 1000 : request.Take;
+                var total = query.Count();
                 if (request.Asc)
                 {
                     if (request.Cursor.HasValue)
@@ -147,16 +145,15 @@ namespace MarketingBox.Postback.Service.Repositories
                     query = query.OrderByDescending(x => x.Id);
                 }
 
-                query = query.Take(limit);
+                if (request.Take.HasValue)
+                {
+                    query = query.Take(request.Take.Value);
+                }
 
                 await query.LoadAsync();
                 var result = query.ToArray();
-                if (result.Length == 0)
-                {
-                    throw new NotFoundException("There is no entity for such request.");
-                }
 
-                return result;
+                return (result,total);
             }
             catch (Exception ex)
             {

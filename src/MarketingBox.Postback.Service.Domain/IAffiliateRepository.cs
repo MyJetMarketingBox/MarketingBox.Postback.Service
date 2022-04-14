@@ -4,6 +4,6 @@ namespace MarketingBox.Postback.Service.Domain
 {
     public interface IAffiliateRepository
     {
-        Task CreateAsync(Domain.Models.Affiliate affiliate);
+        Task CreateAsync(Models.Affiliate affiliate);
     }
 }

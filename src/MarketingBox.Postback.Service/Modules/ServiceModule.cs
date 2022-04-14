@@ -1,12 +1,9 @@
 ﻿using Autofac;
-using FluentValidation;
 using MarketingBox.Postback.Service.Domain;
-using MarketingBox.Postback.Service.Domain.Models.Requests;
 using MarketingBox.Postback.Service.Engines;
 using MarketingBox.Postback.Service.Postgres;
 using MarketingBox.Postback.Service.Repositories;
 using MarketingBox.Postback.Service.Subscribers;
-using MarketingBox.Postback.Service.Validators;
 
 namespace MarketingBox.Postback.Service.Modules
 {
@@ -50,19 +47,6 @@ namespace MarketingBox.Postback.Service.Modules
                 .As<IPostbackLogsCacheEngine>()
                 .SingleInstance()
                 .AutoActivate();
-            
-            builder.RegisterType<CreateOrUpdateReferenceRequestValidator>()
-                .As<IValidator<CreateOrUpdateReferenceRequest>>()
-                .SingleInstance();
-            builder.RegisterType<ByAffiliateIdRequestValidator>()
-                .As<IValidator<ByAffiliateIdRequest>>()
-                .SingleInstance();
-            builder.RegisterType<ByAffiliateIdPaginatedRequestValidator>()
-                .As<IValidator<ByAffiliateIdPaginatedRequest>>()
-                .SingleInstance();
-            builder.RegisterType<FilterLogsRequestValidator>()
-                .As<IValidator<FilterLogsRequest>>()
-                .SingleInstance();
         }
     }
 }

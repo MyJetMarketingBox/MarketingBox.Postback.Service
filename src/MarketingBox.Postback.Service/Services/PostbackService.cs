@@ -45,7 +45,7 @@ namespace MarketingBox.Postback.Service.Services
         {
             try
             {
-                await _affiliateIdValidator.ValidateAndThrowAsync(request);
+                request.ValidateEntity();
                 
                 _logger.LogInformation("Deleting reference entity for affiliate with id {AffiliateId}",
                     request.AffiliateId);
@@ -66,7 +66,7 @@ namespace MarketingBox.Postback.Service.Services
         {
             try
             {
-                await _affiliateIdValidator.ValidateAndThrowAsync(request);
+                request.ValidateEntity();
                 
                 _logger.LogInformation("Getting reference entity for affiliate with id {AffiliateId}",
                     request.AffiliateId);
@@ -91,7 +91,8 @@ namespace MarketingBox.Postback.Service.Services
         {
             try
             {
-                await _createUpdateValidator.ValidateAndThrowAsync(request);
+                request.ValidateEntity();
+                
                 _logger.LogInformation("Getting information about affiliate with id {AffiliateId}",
                     request.AffiliateId);
                 var affiliateResponse = await _affiliateService.GetAsync(new ()
@@ -131,7 +132,7 @@ namespace MarketingBox.Postback.Service.Services
         {
             try
             {
-                await _createUpdateValidator.ValidateAndThrowAsync(request);
+                request.ValidateEntity();
                 
                 _logger.LogInformation("Updating reference: {UpdateReferenceRequest}", request);
 
