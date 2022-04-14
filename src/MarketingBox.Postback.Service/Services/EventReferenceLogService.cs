@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using FluentValidation;
 using MarketingBox.Postback.Service.Domain.Models;
 using MarketingBox.Postback.Service.Domain.Models.Requests;
 using MarketingBox.Sdk.Common.Extensions;
@@ -20,19 +19,13 @@ namespace MarketingBox.Postback.Service.Services
     {
         private readonly ILogger<EventReferenceLogService> _logger;
         private readonly IEventReferenceLoggerRepository _eventReferenceLogger;
-        private readonly IValidator<ByAffiliateIdPaginatedRequest> _paginatedValidator;
-        private readonly IValidator<FilterLogsRequest> _filterLogsValidator;
 
         public EventReferenceLogService(
             ILogger<EventReferenceLogService> logger,
-            IEventReferenceLoggerRepository eventReferenceLogger,
-            IValidator<ByAffiliateIdPaginatedRequest> paginatedValidator,
-            IValidator<FilterLogsRequest> filterLogsValidator)
+            IEventReferenceLoggerRepository eventReferenceLogger)
         {
             _logger = logger;
             _eventReferenceLogger = eventReferenceLogger;
-            _paginatedValidator = paginatedValidator;
-            _filterLogsValidator = filterLogsValidator;
         }
 
         public async Task<Response<IReadOnlyCollection<EventReferenceLog>>> GetAsync(

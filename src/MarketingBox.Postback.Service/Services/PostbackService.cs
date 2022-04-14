@@ -5,7 +5,6 @@ using MarketingBox.Postback.Service.Domain.Models;
 using MarketingBox.Postback.Service.Domain;
 using System;
 using System.Text.Json;
-using FluentValidation;
 using MarketingBox.Affiliate.Service.Grpc;
 using MarketingBox.Postback.Service.Domain.Models.Requests;
 using MarketingBox.Sdk.Common.Extensions;
@@ -21,24 +20,18 @@ namespace MarketingBox.Postback.Service.Services
         private readonly IAffiliateReferenceLoggerRepository _loggerRepository;
         private readonly IAffiliateService _affiliateService;
         private readonly IAffiliateRepository _affiliateRepository;
-        private readonly IValidator<CreateOrUpdateReferenceRequest> _createUpdateValidator;
-        private readonly IValidator<ByAffiliateIdRequest> _affiliateIdValidator;
 
         public PostbackService(ILogger<PostbackService> logger,
             IReferenceRepository referenceRepository,
             IAffiliateReferenceLoggerRepository loggerRepository,
             IAffiliateService affiliateService,
-            IAffiliateRepository affiliateRepository,
-            IValidator<CreateOrUpdateReferenceRequest> createUpdateValidator,
-            IValidator<ByAffiliateIdRequest> affiliateIdValidator)
+            IAffiliateRepository affiliateRepository)
         {
             _logger = logger;
             _referenceRepository = referenceRepository;
             _loggerRepository = loggerRepository;
             _affiliateService = affiliateService;
             _affiliateRepository = affiliateRepository;
-            _createUpdateValidator = createUpdateValidator;
-            _affiliateIdValidator = affiliateIdValidator;
         }
 
         public async Task<Response<bool>> DeleteAsync(ByAffiliateIdRequest request)
