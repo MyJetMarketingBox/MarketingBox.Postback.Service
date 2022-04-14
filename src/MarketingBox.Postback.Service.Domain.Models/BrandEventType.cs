@@ -2,8 +2,8 @@ namespace MarketingBox.Postback.Service.Domain.Models
 {
     public enum BrandEventType
     {
-        Registered,
-        Deposited,
+        Registeration,
+        Deposit,
         ChangedCrm
     }
 }

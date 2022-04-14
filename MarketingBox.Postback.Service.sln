@@ -36,6 +36,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MarketingBox.Postback.Servi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarketingBox.Postback.Service.Postgres", "src\MarketingBox.Postback.Service.Postgres\MarketingBox.Postback.Service.Postgres.csproj", "{37D40D9F-B2C4-4AEC-B83F-2CA649E23BC1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarketingBox.Postback.Service.Messages", "src\MarketingBox.Postback.Service.Messages\MarketingBox.Postback.Service.Messages.csproj", "{65E490B2-16BF-4D11-9C01-010451B98E67}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -74,6 +76,10 @@ Global
 		{37D40D9F-B2C4-4AEC-B83F-2CA649E23BC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{37D40D9F-B2C4-4AEC-B83F-2CA649E23BC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{37D40D9F-B2C4-4AEC-B83F-2CA649E23BC1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{65E490B2-16BF-4D11-9C01-010451B98E67}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{65E490B2-16BF-4D11-9C01-010451B98E67}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{65E490B2-16BF-4D11-9C01-010451B98E67}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{65E490B2-16BF-4D11-9C01-010451B98E67}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -86,6 +92,7 @@ Global
 		{FF868A2B-24FA-42B0-8400-95EDEE689678} = {D11EB899-A148-4C9B-B340-B907EF71C4A2}
 		{5CFE74A4-CDBB-4E2D-9C0A-9CEF20DCB38B} = {446301A0-97F2-4921-BA0B-32B76039C73B}
 		{37D40D9F-B2C4-4AEC-B83F-2CA649E23BC1} = {446301A0-97F2-4921-BA0B-32B76039C73B}
+		{65E490B2-16BF-4D11-9C01-010451B98E67} = {446301A0-97F2-4921-BA0B-32B76039C73B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6BF00C9D-AD55-40F2-8FE3-E5C3559B3E26}

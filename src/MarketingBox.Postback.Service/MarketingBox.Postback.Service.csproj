@@ -36,6 +36,7 @@
   <ItemGroup>
     <ProjectReference Include="..\MarketingBox.Postback.Service.Domain\MarketingBox.Postback.Service.Domain.csproj" />
     <ProjectReference Include="..\MarketingBox.Postback.Service.Grpc\MarketingBox.Postback.Service.Grpc.csproj" />
+    <ProjectReference Include="..\MarketingBox.Postback.Service.Messages\MarketingBox.Postback.Service.Messages.csproj" />
     <ProjectReference Include="..\MarketingBox.Postback.Service.Postgres\MarketingBox.Postback.Service.Postgres.csproj" />
   </ItemGroup>
 
