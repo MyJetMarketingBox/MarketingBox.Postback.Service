@@ -7,6 +7,7 @@
   <ItemGroup>
     <ProjectReference PrivateAssets="All" Include="..\MarketingBox.Postback.Service.Domain.Models\MarketingBox.Postback.Service.Domain.Models.csproj" />
     <ProjectReference PrivateAssets="All" Include="..\MarketingBox.Postback.Service.Grpc\MarketingBox.Postback.Service.Grpc.csproj" />
+    <ProjectReference PrivateAssets="All" Include="..\MarketingBox.Postback.Service.Messages\MarketingBox.Postback.Service.Messages.csproj" />
   </ItemGroup>
 
   <ItemGroup>
