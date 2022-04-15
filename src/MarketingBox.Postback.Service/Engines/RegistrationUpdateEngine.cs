@@ -8,8 +8,8 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using MarketingBox.Registration.Service.Domain.Models.Common;
 using MarketingBox.Registration.Service.Messages.Registrations;
+using MarketingBox.Sdk.Common.Enums;
 
 namespace MarketingBox.Postback.Service.Engines
 {
