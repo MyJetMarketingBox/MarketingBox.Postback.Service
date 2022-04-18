@@ -19,6 +19,10 @@ namespace MarketingBox.Postback.Service.Client
                 .RegisterInstance(factory.GetEventReferenceLogService())
                 .As<IEventReferenceLogService>()
                 .SingleInstance();
+            builder
+                .RegisterInstance(factory.GetBrandPostbackService())
+                .As<IBrandPostbackService>()
+                .SingleInstance();
         }
     }
 }
