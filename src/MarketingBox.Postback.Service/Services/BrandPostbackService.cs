@@ -84,9 +84,10 @@ namespace MarketingBox.Postback.Service.Services
                         if (!registrationId.HasValue)
                         {
                            registration = await RegisterAsync(request, affiliateId);
+                           registrationId = registration.RegistrationId;
                         }
 
-                        await DepositAsync(request, registration.RegistrationId);
+                        await DepositAsync(request, registrationId.Value);
                         break;
                     }
                     case BrandEventType.ChangedCrm:
@@ -94,9 +95,10 @@ namespace MarketingBox.Postback.Service.Services
                         if (!registrationId.HasValue)
                         {
                            registration = await RegisterAsync(request, affiliateId);
+                           registrationId = registration.RegistrationId;
                         }
 
-                        await ChangeCrmAsync(request, registration.RegistrationId);
+                        await ChangeCrmAsync(request, registrationId.Value);
                         break;
                     }
                     default:
