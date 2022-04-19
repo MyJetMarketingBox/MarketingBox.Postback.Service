@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 using Destructurama.Attributed;
 using MarketingBox.Sdk.Common.Attributes;
+using MarketingBox.Sdk.Common.Enums;
 using MarketingBox.Sdk.Common.Models;
 
 namespace MarketingBox.Postback.Service.Domain.Models
@@ -34,7 +35,7 @@ namespace MarketingBox.Postback.Service.Domain.Models
         [LogMasked(PreserveLength = true, ShowFirst = 2, ShowLast = 2)]
         public string Email { get; set; }
 
-        [DataMember(Order = 5), Phone]
+        [DataMember(Order = 5), Phone, StringLength(20, MinimumLength = 7)]
         [LogMasked(PreserveLength = true, ShowFirst = 2, ShowLast = 2)]
         public string Phone { get; set; }
 

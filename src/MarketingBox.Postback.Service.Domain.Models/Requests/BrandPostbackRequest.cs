@@ -9,13 +9,13 @@ namespace MarketingBox.Postback.Service.Domain.Models.Requests
     [DataContract]
     public class BrandPostbackRequest : ValidatableEntity
     {
-        [DataMember(Order = 1), AdvancedCompare(ComparisonType.GreaterThan, 0)]
+        [DataMember(Order = 1),Required, AdvancedCompare(ComparisonType.GreaterThan, 0)]
         public long ClickId { get; set; }
 
         [DataMember(Order = 2), Required, IsEnum]
         public BrandEventType? EventType { get; set; }
 
-        [DataMember(Order = 3), RequiredOnlyIf(nameof(EventType), BrandEventType.ChangedCrm)]
+        [DataMember(Order = 3), IsEnum, RequiredOnlyIf(nameof(EventType), BrandEventType.ChangedCrm)]
         public CrmStatus? CrmStatus { get; set; }
 
         [DataMember(Order = 4), Required] 
