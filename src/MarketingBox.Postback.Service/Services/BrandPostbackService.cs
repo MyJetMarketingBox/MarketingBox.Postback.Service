@@ -13,6 +13,7 @@ using MarketingBox.Registration.Service.Grpc.Requests.Deposits;
 using MarketingBox.Registration.Service.Grpc.Requests.Registration;
 using MarketingBox.Reporting.Service.Grpc;
 using MarketingBox.Reporting.Service.Grpc.Requests.TrackingLinks;
+using MarketingBox.Sdk.Common.Enums;
 using MarketingBox.Sdk.Common.Exceptions;
 using MarketingBox.Sdk.Common.Extensions;
 using MarketingBox.Sdk.Common.Models.Grpc;
@@ -168,6 +169,7 @@ namespace MarketingBox.Postback.Service.Services
                 AffiliateId = affiliateId,
                 ApiKey = affiliate.Affiliate?.GeneralInfo?.ApiKey
             };
+            registrationRequest.RegistrationMode = RegistrationMode.S2S;
 
             var response = await _registrationService.CreateAsync(registrationRequest);
             var registration = response.Process();
