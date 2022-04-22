@@ -10,7 +10,7 @@ namespace MarketingBox.Postback.Service.MapperProfiles
     {
         public BrandPostbackMapperProfile()
         {
-            CreateMap<BrandPostbackRequest, RegistrationCreateRequest>()
+            CreateMap<BrandPostbackRequest, RegistrationCreateS2SRequest>()
                 .ForMember(x => x.BrandInfo, x => x.MapFrom(z => z.RegistrationBrandInfo));
             
             CreateMap<GeneralInfo, GrpcModel.RegistrationGeneralInfo>();

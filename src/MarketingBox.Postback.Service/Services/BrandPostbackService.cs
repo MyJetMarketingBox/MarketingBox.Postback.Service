@@ -13,7 +13,6 @@ using MarketingBox.Registration.Service.Grpc.Requests.Deposits;
 using MarketingBox.Registration.Service.Grpc.Requests.Registration;
 using MarketingBox.Reporting.Service.Grpc;
 using MarketingBox.Reporting.Service.Grpc.Requests.TrackingLinks;
-using MarketingBox.Sdk.Common.Enums;
 using MarketingBox.Sdk.Common.Exceptions;
 using MarketingBox.Sdk.Common.Extensions;
 using MarketingBox.Sdk.Common.Models.Grpc;
@@ -163,15 +162,13 @@ namespace MarketingBox.Postback.Service.Services
                 throw new NotFoundException("Affiliate with id", affiliateId);
             }
 
-            var registrationRequest = _mapper.Map<RegistrationCreateRequest>(request);
+            var registrationRequest = _mapper.Map<RegistrationCreateS2SRequest>(request);
             registrationRequest.AuthInfo = new AffiliateAuthInfo
             {
                 AffiliateId = affiliateId,
                 ApiKey = affiliate.Affiliate?.GeneralInfo?.ApiKey
             };
-            registrationRequest.RegistrationMode = RegistrationMode.S2S;
-
-            var response = await _registrationService.CreateAsync(registrationRequest);
+            var response = await _registrationService.CreateS2SAsync(registrationRequest);
             var registration = response.Process();
 
             await _serviceBusPublisher.PublishAsync(new TrackingLinkUpdateRegistrationIdMessage
