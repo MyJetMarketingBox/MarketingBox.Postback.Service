@@ -61,7 +61,7 @@ namespace MarketingBox.Postback.Service.Services
             {
                 request.ValidateEntity();
 
-                var (registrationId, affiliateId) = await GetRegistrationAndAffiliateIdsByClickIdAsync(request.ClickId);
+                var (registrationId, affiliateId, brandId) = await GetRegistrationAndAffiliateIdsByClickIdAsync(request.ClickId);
                 Registration.Service.Domain.Models.Registrations.Registration registration = null;
                 switch (request.EventType)
                 {
@@ -69,7 +69,7 @@ namespace MarketingBox.Postback.Service.Services
                     {
                         if (!registrationId.HasValue)
                         {
-                            await RegisterAsync(request, affiliateId);
+                            await RegisterAsync(request, affiliateId, brandId);
                         }
                         else
                         {
@@ -83,7 +83,7 @@ namespace MarketingBox.Postback.Service.Services
                     {
                         if (!registrationId.HasValue)
                         {
-                           registration = await RegisterAsync(request, affiliateId);
+                            registration = await RegisterAsync(request, affiliateId, brandId);
                            registrationId = registration.RegistrationId;
                         }
 
@@ -94,7 +94,7 @@ namespace MarketingBox.Postback.Service.Services
                     {
                         if (!registrationId.HasValue)
                         {
-                           registration = await RegisterAsync(request, affiliateId);
+                            registration = await RegisterAsync(request, affiliateId, brandId);
                            registrationId = registration.RegistrationId;
                         }
 
@@ -118,7 +118,7 @@ namespace MarketingBox.Postback.Service.Services
             }
         }
 
-        private async Task<(long?, long)> GetRegistrationAndAffiliateIdsByClickIdAsync(long clickId)
+        private async Task<(long?, long, long)> GetRegistrationAndAffiliateIdsByClickIdAsync(long clickId)
         {
             var trackingLinkResponse = await _trackingLinkReportService.GetAsync(
                 new TrackingLinkByClickIdRequest
@@ -126,7 +126,7 @@ namespace MarketingBox.Postback.Service.Services
                     ClickId = clickId
                 });
             var trackingLink = trackingLinkResponse.Process();
-            return (trackingLink.RegistrationId, trackingLink.AffiliateId);
+            return (trackingLink.RegistrationId, trackingLink.AffiliateId, trackingLink.BrandId);
         }
 
         private async Task ChangeCrmAsync(BrandPostbackRequest request, long registrationId)
@@ -150,7 +150,8 @@ namespace MarketingBox.Postback.Service.Services
             });
         }
 
-        private async Task<Registration.Service.Domain.Models.Registrations.Registration> RegisterAsync(BrandPostbackRequest request, long affiliateId)
+        private async Task<Registration.Service.Domain.Models.Registrations.Registration> RegisterAsync(
+            BrandPostbackRequest request, long affiliateId, long brandId)
         {
             _logger.LogInformation("Register: {@Context} ", request);
 
@@ -163,6 +164,7 @@ namespace MarketingBox.Postback.Service.Services
             }
 
             var registrationRequest = _mapper.Map<RegistrationCreateS2SRequest>(request);
+            registrationRequest.BrandId = brandId;
             registrationRequest.AuthInfo = new AffiliateAuthInfo
             {
                 AffiliateId = affiliateId,
