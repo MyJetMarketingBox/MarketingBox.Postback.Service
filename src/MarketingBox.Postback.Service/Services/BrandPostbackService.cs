@@ -61,7 +61,8 @@ namespace MarketingBox.Postback.Service.Services
             {
                 request.ValidateEntity();
 
-                var (registrationId, affiliateId, brandId) = await GetRegistrationAndAffiliateIdsByClickIdAsync(request.ClickId);
+                var (registrationId, affiliateId, brandId) =
+                    await GetRegistrationAndAffiliateIdsByClickIdAsync(request.ClickId);
                 Registration.Service.Domain.Models.Registrations.Registration registration = null;
                 switch (request.EventType)
                 {
@@ -84,7 +85,7 @@ namespace MarketingBox.Postback.Service.Services
                         if (!registrationId.HasValue)
                         {
                             registration = await RegisterAsync(request, affiliateId, brandId);
-                           registrationId = registration.RegistrationId;
+                            registrationId = registration.Id;
                         }
 
                         await DepositAsync(request, registrationId.Value);
@@ -95,7 +96,7 @@ namespace MarketingBox.Postback.Service.Services
                         if (!registrationId.HasValue)
                         {
                             registration = await RegisterAsync(request, affiliateId, brandId);
-                           registrationId = registration.RegistrationId;
+                            registrationId = registration.Id;
                         }
 
                         await ChangeCrmAsync(request, registrationId.Value);
@@ -176,7 +177,7 @@ namespace MarketingBox.Postback.Service.Services
             await _serviceBusPublisher.PublishAsync(new TrackingLinkUpdateRegistrationIdMessage
             {
                 ClickId = request.ClickId,
-                RegistrationId = registration.RegistrationId
+                RegistrationId = registration.Id
             });
 
             return registration;
