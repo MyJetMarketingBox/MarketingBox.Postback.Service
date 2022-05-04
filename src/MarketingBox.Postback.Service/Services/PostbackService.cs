@@ -4,6 +4,7 @@ using MarketingBox.Postback.Service.Grpc;
 using MarketingBox.Postback.Service.Domain.Models;
 using MarketingBox.Postback.Service.Domain;
 using System;
+using System.Collections.Generic;
 using System.Text.Json;
 using MarketingBox.Affiliate.Service.Grpc;
 using MarketingBox.Postback.Service.Domain.Models.Requests;
@@ -77,6 +78,30 @@ namespace MarketingBox.Postback.Service.Services
             catch (Exception ex)
             {
                 return ex.FailedResponse<Reference>();
+            }
+        }
+
+        public async Task<Response<IReadOnlyCollection<Reference>>> SearchAsync(SearchReferenceRequest request)
+        {
+            try
+            {
+                request.ValidateEntity();
+                
+                _logger.LogInformation("Search reference entities for request {@Request}",
+                    request);
+
+                var (res,total) = await _referenceRepository.SearchAsync(request);
+
+                return new Response<IReadOnlyCollection<Reference>>
+                {
+                    Status = ResponseStatus.Ok,
+                    Data = res,
+                    Total = total
+                };
+            }
+            catch (Exception ex)
+            {
+                return ex.FailedResponse<IReadOnlyCollection<Reference>>();
             }
         }
 

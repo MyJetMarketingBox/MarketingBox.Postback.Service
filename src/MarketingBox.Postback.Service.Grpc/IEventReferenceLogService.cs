@@ -11,9 +11,6 @@ namespace MarketingBox.Postback.Service.Grpc
     public interface IEventReferenceLogService
     {
         [OperationContract]
-        Task<Response<IReadOnlyCollection<EventReferenceLog>>> GetAsync(ByAffiliateIdPaginatedRequest request);
-
-        [OperationContract]
         Task<Response<IReadOnlyCollection<EventReferenceLog>>> SearchAsync(FilterLogsRequest request);
     }
 }

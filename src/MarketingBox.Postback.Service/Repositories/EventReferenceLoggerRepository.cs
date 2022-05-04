@@ -8,7 +8,6 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using MarketingBox.Postback.Service.Domain.Models.Requests;
-using MarketingBox.Sdk.Common.Exceptions;
 
 namespace MarketingBox.Postback.Service.Repositories
 {
@@ -40,54 +39,7 @@ namespace MarketingBox.Postback.Service.Repositories
             }
         }
 
-        public async Task<(EventReferenceLog[],int)> GetAsync(ByAffiliateIdPaginatedRequest request)
-        {
-            try
-            {
-                await using var context = _factory.Create();
-                var query = context.EventReferenceLogs
-                    .Where(x => x.AffiliateId == request.AffiliateId)
-                    .Include(x => x.Affiliate)
-                    .AsQueryable();
-
-                var total = query.Count();
-                if (request.Asc)
-                {
-                    if (request.Cursor != null)
-                    {
-                        query = query.Where(x => x.Id > request.Cursor);
-                    }
-
-                    query = query.OrderBy(x => x.Id);
-                }
-                else
-                {
-                    if (request.Cursor != null)
-                    {
-                        query = query.Where(x => x.Id < request.Cursor);
-                    }
-
-                    query = query.OrderByDescending(x => x.Id);
-                }
-
-                if (request.Take.HasValue)
-                {
-                    query = query.Take(request.Take.Value);   
-                }
-
-                await query.LoadAsync();
-                var result = query.ToArray();
-
-                return (result, total);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, ex.Message);
-                throw;
-            }
-        }
-
-        public async Task<(EventReferenceLog[],int)> SearchAsync(FilterLogsRequest request)
+        public async Task<(EventReferenceLog[], int)> SearchAsync(FilterLogsRequest request)
         {
             try
             {
@@ -95,24 +47,26 @@ namespace MarketingBox.Postback.Service.Repositories
                 var query = context.EventReferenceLogs
                     .Include(x => x.Affiliate)
                     .AsQueryable();
-                if (request.AffiliateId.HasValue)
+                if (request.AffiliateIds.Any())
                 {
-                    query = query.Where(x => x.AffiliateId == request.AffiliateId.Value);
+                    query = query.Where(x => request.AffiliateIds.Contains(x.AffiliateId));
+                }
+
+                if (!string.IsNullOrEmpty(request.AffiliateName))
+                {
+                    query = query.Where(x =>
+                        x.Affiliate.Name.ToLower().Contains(request.AffiliateName.ToLowerInvariant()));
+                }
+
+                if (!string.IsNullOrEmpty(request.RegistrationUId))
+                {
+                    query = query.Where(x =>
+                        x.RegistrationUId.ToLower().Contains(request.RegistrationUId.ToLowerInvariant()));
                 }
 
                 if (request.EventType.HasValue)
                 {
                     query = query.Where(x => x.EventType == request.EventType.Value);
-                }
-
-                if (request.HttpQueryType.HasValue)
-                {
-                    query = query.Where(x => x.HttpQueryType == request.HttpQueryType.Value);
-                }
-
-                if (request.ResponseStatus.HasValue)
-                {
-                    query = query.Where(x => x.PostbackResponseStatus == request.ResponseStatus.Value);
                 }
 
                 if (request.FromDate.HasValue)
@@ -138,7 +92,7 @@ namespace MarketingBox.Postback.Service.Repositories
                 else
                 {
                     if (request.Cursor.HasValue)
-                    { 
+                    {
                         query = query.Where(x => x.Id < request.Cursor);
                     }
 
@@ -153,7 +107,7 @@ namespace MarketingBox.Postback.Service.Repositories
                 await query.LoadAsync();
                 var result = query.ToArray();
 
-                return (result,total);
+                return (result, total);
             }
             catch (Exception ex)
             {

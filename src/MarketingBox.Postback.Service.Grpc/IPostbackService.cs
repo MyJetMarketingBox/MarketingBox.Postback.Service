@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.ServiceModel;
 using System.Threading.Tasks;
 using MarketingBox.Postback.Service.Domain.Models;
@@ -11,6 +12,8 @@ namespace MarketingBox.Postback.Service.Grpc
     {
         [OperationContract]
         Task<Response<Reference>> GetAsync(ByAffiliateIdRequest request);
+        [OperationContract]
+        Task<Response<IReadOnlyCollection<Reference>>> SearchAsync(SearchReferenceRequest request);
 
         [OperationContract]
         Task<Response<Reference>> CreateAsync(CreateOrUpdateReferenceRequest request);

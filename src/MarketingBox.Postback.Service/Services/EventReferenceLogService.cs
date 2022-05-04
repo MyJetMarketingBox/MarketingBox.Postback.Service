@@ -4,10 +4,8 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using MarketingBox.Postback.Service.Domain.Models;
-using MarketingBox.Postback.Service.Domain.Models.Requests;
 using MarketingBox.Sdk.Common.Extensions;
 using MarketingBox.Sdk.Common.Models.Grpc;
 using FilterLogsRequest = MarketingBox.Postback.Service.Domain.Models.Requests.FilterLogsRequest;
@@ -27,31 +25,6 @@ namespace MarketingBox.Postback.Service.Services
             _logger = logger;
             _eventReferenceLogger = eventReferenceLogger;
         }
-
-        public async Task<Response<IReadOnlyCollection<EventReferenceLog>>> GetAsync(
-            ByAffiliateIdPaginatedRequest request)
-        {
-            try
-            {
-                request.ValidateEntity();
-
-                _logger.LogInformation("Getting logs for affiliate: {AffiliateId}", request.AffiliateId);
-
-                var (res, total) = await _eventReferenceLogger.GetAsync(request);
-
-                return new Response<IReadOnlyCollection<EventReferenceLog>>
-                {
-                    Status = ResponseStatus.Ok,
-                    Data = res,
-                    Total = total
-                };
-            }
-            catch (Exception ex)
-            {
-                return ex.FailedResponse<IReadOnlyCollection<EventReferenceLog>>();
-            }
-        }
-
 
         public async Task<Response<IReadOnlyCollection<EventReferenceLog>>> SearchAsync(FilterLogsRequest request)
         {
