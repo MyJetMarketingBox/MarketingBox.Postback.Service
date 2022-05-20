@@ -29,8 +29,7 @@ namespace MarketingBox.Postback.Service.Repositories
                 await context.EventReferenceLogs.AddAsync(eventReferenceLog);
                 await context.SaveChangesAsync();
 
-                _logger.LogInformation("Log {eventReferenceLog} was created.",
-                    JsonConvert.SerializeObject(eventReferenceLog));
+                _logger.LogInformation("Log {@EventReferenceLog} was created.",eventReferenceLog);
             }
             catch (Exception ex)
             {
@@ -56,6 +55,11 @@ namespace MarketingBox.Postback.Service.Repositories
                 {
                     query = query.Where(x =>
                         x.Affiliate.Name.ToLower().Contains(request.AffiliateName.ToLowerInvariant()));
+                }
+                if (!string.IsNullOrEmpty(request.TenantId))
+                {
+                    query = query.Where(x =>
+                        x.TenantId.Equals(request.TenantId));
                 }
 
                 if (!string.IsNullOrEmpty(request.RegistrationUId))

@@ -19,5 +19,6 @@ namespace MarketingBox.Postback.Service.Domain.Models.Requests
         public int? Take { get; set; }
 
         [DataMember(Order = 6)] public bool Asc { get; set; }
+        [DataMember(Order = 7)] public string TenantId { get; set; }
     }
 }

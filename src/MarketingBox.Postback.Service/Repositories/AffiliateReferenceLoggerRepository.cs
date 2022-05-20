@@ -18,7 +18,7 @@ namespace MarketingBox.Postback.Service.Repositories
         {
         }
 
-        public async Task CreateAsync(long affiliateId, long referenceId, OperationType operationType)
+        public async Task CreateAsync(long affiliateId, long referenceId, string tenantId, OperationType operationType)
         {
             try
             {
@@ -29,7 +29,8 @@ namespace MarketingBox.Postback.Service.Repositories
                         AffiliateId = affiliateId,
                         Date = DateTime.UtcNow,
                         Operation = operationType,
-                        ReferenceId = referenceId
+                        ReferenceId = referenceId,
+                        TenantId = tenantId
                     });
                 await context.SaveChangesAsync();
 

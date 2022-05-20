@@ -25,5 +25,8 @@ namespace MarketingBox.Postback.Service.Domain.Models.Requests
 
         [DataMember(Order = 6), Required, IsEnum]
         public HttpQueryType? HttpQueryType { get; set; }
+        
+        [DataMember(Order = 7), Required]
+        public string TenantId { get; set; }
     }
 }

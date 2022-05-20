@@ -6,7 +6,7 @@ using MarketingBox.Postback.Service.Domain;
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using MarketingBox.Affiliate.Service.Grpc;
+using MarketingBox.Affiliate.Service.Client.Interfaces;
 using MarketingBox.Postback.Service.Domain.Models.Requests;
 using MarketingBox.Sdk.Common.Extensions;
 using MarketingBox.Sdk.Common.Models.Grpc;
@@ -19,20 +19,20 @@ namespace MarketingBox.Postback.Service.Services
         private readonly ILogger<PostbackService> _logger;
         private readonly IReferenceRepository _referenceRepository;
         private readonly IAffiliateReferenceLoggerRepository _loggerRepository;
-        private readonly IAffiliateService _affiliateService;
+        private readonly IAffiliateClient _affiliateClient;
         private readonly IAffiliateRepository _affiliateRepository;
 
         public PostbackService(ILogger<PostbackService> logger,
             IReferenceRepository referenceRepository,
             IAffiliateReferenceLoggerRepository loggerRepository,
-            IAffiliateService affiliateService,
-            IAffiliateRepository affiliateRepository)
+            IAffiliateRepository affiliateRepository,
+            IAffiliateClient affiliateClient)
         {
             _logger = logger;
             _referenceRepository = referenceRepository;
             _loggerRepository = loggerRepository;
-            _affiliateService = affiliateService;
             _affiliateRepository = affiliateRepository;
+            _affiliateClient = affiliateClient;
         }
 
         public async Task<Response<bool>> DeleteAsync(ByAffiliateIdRequest request)
@@ -40,13 +40,17 @@ namespace MarketingBox.Postback.Service.Services
             try
             {
                 request.ValidateEntity();
-                
+
                 _logger.LogInformation("Deleting reference entity for affiliate with id {AffiliateId}",
                     request.AffiliateId);
 
-                var deletedId = await _referenceRepository.DeleteAsync(request.AffiliateId.Value);
+                var res = await _referenceRepository.DeleteAsync(request.AffiliateId.Value);
 
-                await _loggerRepository.CreateAsync(request.AffiliateId.Value, deletedId, OperationType.Delete);
+                await _loggerRepository.CreateAsync(
+                    request.AffiliateId.Value,
+                    res.Id,
+                    res.TenantId,
+                    OperationType.Delete);
 
                 return new Response<bool> {Status = ResponseStatus.Ok, Data = true};
             }
@@ -61,13 +65,13 @@ namespace MarketingBox.Postback.Service.Services
             try
             {
                 request.ValidateEntity();
-                
+
                 _logger.LogInformation("Getting reference entity for affiliate with id {AffiliateId}",
                     request.AffiliateId);
 
                 var res = await _referenceRepository.GetAsync(request.AffiliateId.Value);
 
-                await _loggerRepository.CreateAsync(request.AffiliateId.Value, res.Id, OperationType.Get);
+                await _loggerRepository.CreateAsync(request.AffiliateId.Value, res.Id, res.TenantId, OperationType.Get);
 
                 return new Response<Reference>
                 {
@@ -86,11 +90,11 @@ namespace MarketingBox.Postback.Service.Services
             try
             {
                 request.ValidateEntity();
-                
+
                 _logger.LogInformation("Search reference entities for request {@Request}",
                     request);
 
-                var (res,total) = await _referenceRepository.SearchAsync(request);
+                var (res, total) = await _referenceRepository.SearchAsync(request);
 
                 return new Response<IReadOnlyCollection<Reference>>
                 {
@@ -110,29 +114,31 @@ namespace MarketingBox.Postback.Service.Services
             try
             {
                 request.ValidateEntity();
-                
+
                 _logger.LogInformation("Getting information about affiliate with id {AffiliateId}",
                     request.AffiliateId);
-                var affiliateResponse = await _affiliateService.GetAsync(new ()
-                {
-                    AffiliateId = request.AffiliateId.Value
-                });
-                var affiliate = affiliateResponse.Process();
+                var affiliate =
+                    await _affiliateClient.GetAffiliateById(request.AffiliateId.Value, request.TenantId, true);
 
                 _logger.LogWarning("Saving information about affiliate with id {AffiliateId}",
                     request.AffiliateId);
                 await _affiliateRepository.CreateAsync(
                     new Domain.Models.Affiliate
                     {
-                        Id = affiliate.Id,
-                        Name = affiliate.Username
+                        Id = affiliate.AffiliateId,
+                        Name = affiliate.GeneralInfo.Username,
+                        TenantId = affiliate.TenantId
                     });
 
                 _logger.LogInformation("Saving reference: {SaveReferenceRequest}", JsonSerializer.Serialize(request));
 
                 var res = await _referenceRepository.CreateAsync(request);
 
-                await _loggerRepository.CreateAsync(request.AffiliateId.Value, res.Id, OperationType.Create);
+                await _loggerRepository.CreateAsync(
+                    request.AffiliateId.Value,
+                    res.Id,
+                    res.TenantId,
+                    OperationType.Create);
 
                 return new Response<Reference>
                 {
@@ -151,12 +157,16 @@ namespace MarketingBox.Postback.Service.Services
             try
             {
                 request.ValidateEntity();
-                
+
                 _logger.LogInformation("Updating reference: {UpdateReferenceRequest}", request);
 
                 var res = await _referenceRepository.UpdateAsync(request);
 
-                await _loggerRepository.CreateAsync(request.AffiliateId.Value, res.Id, OperationType.Update);
+                await _loggerRepository.CreateAsync(
+                    request.AffiliateId.Value,
+                    res.Id,
+                    res.TenantId,
+                    OperationType.Update);
 
                 return new Response<Reference>
                 {

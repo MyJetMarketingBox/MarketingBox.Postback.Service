@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using MarketingBox.Postback.Service.Domain.Models;
+﻿using MarketingBox.Postback.Service.Domain.Models;
 using MarketingBox.Postback.Service.Postgres.Entities;
 using Microsoft.EntityFrameworkCore;
 using MyJetWallet.Sdk.Postgres;

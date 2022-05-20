@@ -1,7 +1,6 @@
 ﻿using MarketingBox.Postback.Service.Domain;
 using MarketingBox.Postback.Service.Grpc;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -32,8 +31,7 @@ namespace MarketingBox.Postback.Service.Services
             {
                 request.ValidateEntity();
 
-                _logger.LogInformation("Searching logs by filter: {FilterLogsRequest}",
-                    JsonConvert.SerializeObject(request));
+                _logger.LogInformation("Searching logs by filter: {@FilterLogsRequest}", request);
 
                 var (res, total) = await _eventReferenceLogger.SearchAsync(request);
 

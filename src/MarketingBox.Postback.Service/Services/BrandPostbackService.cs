@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using AutoMapper;
-using MarketingBox.Affiliate.Service.MyNoSql.Affiliates;
+using MarketingBox.Affiliate.Service.Client.Interfaces;
 using MarketingBox.Postback.Service.Domain.Models;
 using MarketingBox.Postback.Service.Domain.Models.Requests;
 using MarketingBox.Postback.Service.Grpc;
@@ -11,39 +11,34 @@ using MarketingBox.Registration.Service.Grpc;
 using MarketingBox.Registration.Service.Grpc.Requests.Crm;
 using MarketingBox.Registration.Service.Grpc.Requests.Deposits;
 using MarketingBox.Registration.Service.Grpc.Requests.Registration;
+using MarketingBox.Reporting.Service.Domain.Models.TrackingLinks;
 using MarketingBox.Reporting.Service.Grpc;
 using MarketingBox.Reporting.Service.Grpc.Requests.TrackingLinks;
-using MarketingBox.Sdk.Common.Exceptions;
 using MarketingBox.Sdk.Common.Extensions;
 using MarketingBox.Sdk.Common.Models.Grpc;
 using Microsoft.Extensions.Logging;
 using MyJetWallet.Sdk.ServiceBus;
-using MyNoSqlServer.Abstractions;
 
 namespace MarketingBox.Postback.Service.Services
 {
     public class BrandPostbackService : IBrandPostbackService
     {
         private readonly ILogger<BrandPostbackService> _logger;
-        private readonly IMyNoSqlServerDataReader<AffiliateNoSql> _affiliateNoSqlServerDataReader;
+        private readonly IAffiliateClient _affiliateClient;
         private readonly IServiceBusPublisher<TrackingLinkUpdateRegistrationIdMessage> _serviceBusPublisher;
         private readonly ITrackingLinkReportService _trackingLinkReportService;
         private readonly Registration.Service.Grpc.IRegistrationService _registrationService;
         private readonly ICrmService _crmService;
         private readonly IDepositService _depositService;
         private readonly IMapper _mapper;
-
-        // Todo: implement proper logic for multi-tenancy and get rid of this constant.
-        private const string TenantId = "default-tenant-id";
-
+        
         public BrandPostbackService(ILogger<BrandPostbackService> logger,
             IServiceBusPublisher<TrackingLinkUpdateRegistrationIdMessage> serviceBusPublisher,
             ITrackingLinkReportService trackingLinkReportService,
             Registration.Service.Grpc.IRegistrationService registrationService,
             IMapper mapper,
             ICrmService crmService,
-            IDepositService depositService,
-            IMyNoSqlServerDataReader<AffiliateNoSql> affiliateNoSqlServerDataReader)
+            IDepositService depositService, IAffiliateClient affiliateClient)
         {
             _logger = logger;
             _serviceBusPublisher = serviceBusPublisher;
@@ -52,7 +47,7 @@ namespace MarketingBox.Postback.Service.Services
             _mapper = mapper;
             _crmService = crmService;
             _depositService = depositService;
-            _affiliateNoSqlServerDataReader = affiliateNoSqlServerDataReader;
+            _affiliateClient = affiliateClient;
         }
 
         public async Task<Response<bool>> ProcessRequestAsync(BrandPostbackRequest request)
@@ -61,8 +56,12 @@ namespace MarketingBox.Postback.Service.Services
             {
                 request.ValidateEntity();
 
-                var (registrationId, affiliateId, brandId) =
-                    await GetRegistrationAndAffiliateIdsByClickIdAsync(request.ClickId);
+                var trackingLink =
+                    await GetTrackingLinkByClickIdAsync(request.ClickId);
+                var registrationId = trackingLink.RegistrationId;
+                var affiliateId = trackingLink.AffiliateId;
+                var brandId = trackingLink.BrandId;
+                var tenantId = trackingLink.TenantId;
                 Registration.Service.Domain.Models.Registrations.Registration registration = null;
                 switch (request.EventType)
                 {
@@ -88,7 +87,7 @@ namespace MarketingBox.Postback.Service.Services
                             registrationId = registration.Id;
                         }
 
-                        await DepositAsync(request, registrationId.Value);
+                        await DepositAsync(request, registrationId.Value, tenantId);
                         break;
                     }
                     case BrandEventType.ChangedCrm:
@@ -99,7 +98,7 @@ namespace MarketingBox.Postback.Service.Services
                             registrationId = registration.Id;
                         }
 
-                        await ChangeCrmAsync(request, registrationId.Value);
+                        await ChangeCrmAsync(request, registrationId.Value, tenantId);
                         break;
                     }
                     default:
@@ -119,7 +118,7 @@ namespace MarketingBox.Postback.Service.Services
             }
         }
 
-        private async Task<(long?, long, long)> GetRegistrationAndAffiliateIdsByClickIdAsync(long clickId)
+        private async Task<TrackingLink> GetTrackingLinkByClickIdAsync(long clickId)
         {
             var trackingLinkResponse = await _trackingLinkReportService.GetAsync(
                 new TrackingLinkByClickIdRequest
@@ -127,27 +126,27 @@ namespace MarketingBox.Postback.Service.Services
                     ClickId = clickId
                 });
             var trackingLink = trackingLinkResponse.Process();
-            return (trackingLink.RegistrationId, trackingLink.AffiliateId, trackingLink.BrandId);
+            return trackingLink;
         }
 
-        private async Task ChangeCrmAsync(BrandPostbackRequest request, long registrationId)
+        private async Task ChangeCrmAsync(BrandPostbackRequest request, long registrationId, string tenantId)
         {
             _logger.LogInformation("Changing crm status: {@Context} ", request.CrmStatus);
             await _crmService.SetCrmStatusAsync(new UpdateCrmStatusRequest
             {
                 Crm = request.CrmStatus,
                 RegistrationId = registrationId,
-                TenantId = TenantId
+                TenantId = tenantId
             });
         }
 
-        private async Task DepositAsync(BrandPostbackRequest request, long registrationId)
+        private async Task DepositAsync(BrandPostbackRequest request, long registrationId, string tenantId)
         {
             _logger.LogInformation("Make deposit: {@Context} ", request);
             await _depositService.RegisterDepositAsync(new DepositCreateRequest
             {
                 RegistrationId = registrationId,
-                TenantId = TenantId
+                TenantId = tenantId
             });
         }
 
@@ -156,20 +155,14 @@ namespace MarketingBox.Postback.Service.Services
         {
             _logger.LogInformation("Register: {@Context} ", request);
 
-            var affiliate = _affiliateNoSqlServerDataReader.Get(
-                AffiliateNoSql.GeneratePartitionKey(TenantId),
-                AffiliateNoSql.GenerateRowKey(affiliateId));
-            if (affiliate is null)
-            {
-                throw new NotFoundException("Affiliate with id", affiliateId);
-            }
+            var affiliate = await _affiliateClient.GetAffiliateById(affiliateId, checkInService: true);
 
             var registrationRequest = _mapper.Map<RegistrationCreateS2SRequest>(request);
             registrationRequest.BrandId = brandId;
             registrationRequest.AuthInfo = new AffiliateAuthInfo
             {
                 AffiliateId = affiliateId,
-                ApiKey = affiliate.Affiliate?.GeneralInfo?.ApiKey
+                ApiKey = affiliate.GeneralInfo?.ApiKey
             };
             var response = await _registrationService.CreateS2SAsync(registrationRequest);
             var registration = response.Process();

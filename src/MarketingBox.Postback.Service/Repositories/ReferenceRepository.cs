@@ -25,7 +25,7 @@ namespace MarketingBox.Postback.Service.Repositories
             _mapper = mapper;
         }
 
-        public async Task<long> DeleteAsync(long affiliateId)
+        public async Task<Reference> DeleteAsync(long affiliateId)
         {
             try
             {
@@ -37,11 +37,10 @@ namespace MarketingBox.Postback.Service.Repositories
                     throw new NotFoundException(nameof(affiliateId), affiliateId);
                 }
 
-                var id = entityToDelete.Id;
                 context.References.Remove(entityToDelete);
 
                 await context.SaveChangesAsync();
-                return id;
+                return entityToDelete;
             }
             catch (Exception ex)
             {
@@ -65,6 +64,10 @@ namespace MarketingBox.Postback.Service.Repositories
                 {
                     query = query.Where(x =>
                         x.Affiliate.Name.ToLower().Contains(request.AffiliateName.ToLowerInvariant()));
+                }
+                if (!string.IsNullOrEmpty(request.TenantId))
+                {
+                    query = query.Where(x => x.TenantId.Equals(request.TenantId));
                 }
 
                 if (request.AffiliateIds.Any())

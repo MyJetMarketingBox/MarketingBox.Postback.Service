@@ -31,5 +31,8 @@ namespace MarketingBox.Postback.Service.Domain.Models.Requests
         [DataMember(Order = 10)] public PostbackResponseStatus? ResponseStatus { get; set; }
 
         [DataMember(Order = 11)] public string RegistrationUId { get; set; }
+
+        [DataMember(Order = 12)]
+        public string TenantId { get; set; }
     }
 }
