@@ -19,7 +19,6 @@ namespace MarketingBox.Postback.Service.Modules
             var noSqlClient = builder.CreateNoSqlClient(
                 Program.ReloadedSettings(e => e.MyNoSqlReaderHostPort).Invoke(),
                 new LoggerFactory());
-            builder.RegisterMyNoSqlReader<AffiliateNoSql>(noSqlClient, AffiliateNoSql.TableName);
 
             var serviceBusClient = builder.RegisterMyServiceBusTcpClient(
                 Program.ReloadedSettings(e => e.MarketingBoxServiceBusHostPort),
@@ -33,8 +32,8 @@ namespace MarketingBox.Postback.Service.Modules
                 RegistrationUpdateMessage.Topic,
                 "MarketingBox-Postback-Service",
                 TopicQueueType.PermanentWithSingleConnection);
-
-            builder.RegisterAffiliateServiceClient(Program.Settings.AffiliateServiceUrl);
+            
+            builder.RegisterAffiliateClient(Program.Settings.AffiliateServiceUrl, noSqlClient);
             builder.RegisterReportingServiceClient(Program.Settings.ReportingServiceUrl);
             builder.RegisterRegistrationServiceClient(Program.Settings.RegistrationServiceUrl);
         }
