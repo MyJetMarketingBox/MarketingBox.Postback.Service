@@ -3,7 +3,6 @@ using MarketingBox.Postback.Service.Domain.Models;
 using MarketingBox.Postback.Service.Postgres;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -29,7 +28,7 @@ namespace MarketingBox.Postback.Service.Repositories
                 await context.EventReferenceLogs.AddAsync(eventReferenceLog);
                 await context.SaveChangesAsync();
 
-                _logger.LogInformation("Log {@EventReferenceLog} was created.",eventReferenceLog);
+                _logger.LogInformation("Log {@EventReferenceLog} was created.", eventReferenceLog);
             }
             catch (Exception ex)
             {
@@ -56,6 +55,7 @@ namespace MarketingBox.Postback.Service.Repositories
                     query = query.Where(x =>
                         x.Affiliate.Name.ToLower().Contains(request.AffiliateName.ToLowerInvariant()));
                 }
+
                 if (!string.IsNullOrEmpty(request.TenantId))
                 {
                     query = query.Where(x =>

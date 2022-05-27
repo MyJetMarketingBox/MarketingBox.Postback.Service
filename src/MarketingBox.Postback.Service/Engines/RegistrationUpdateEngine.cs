@@ -68,7 +68,8 @@ namespace MarketingBox.Postback.Service.Engines
                     AffiliateId = affiliateId,
                     RegistrationUId = registrationUId,
                     EventMessage = JsonConvert.SerializeObject(message),
-                    EventType = eventType
+                    EventType = eventType,
+                    TenantId = message.TenantId
                 };
 
                 var reference = eventType switch
