@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using AutoMapper;
 using MarketingBox.Affiliate.Service.Client.Interfaces;
+using MarketingBox.Affiliate.Service.Grpc.Requests.Offers;
 using MarketingBox.Postback.Service.Domain.Models;
 using MarketingBox.Postback.Service.Domain.Models.Requests;
 using MarketingBox.Postback.Service.Grpc;
@@ -62,6 +63,7 @@ namespace MarketingBox.Postback.Service.Services
                 var affiliateId = trackingLink.AffiliateId;
                 var brandId = trackingLink.BrandId;
                 var tenantId = trackingLink.TenantId;
+                var offerId = trackingLink.OfferId;
                 Registration.Service.Domain.Models.Registrations.Registration registration = null;
                 switch (request.EventType)
                 {
@@ -69,7 +71,7 @@ namespace MarketingBox.Postback.Service.Services
                     {
                         if (!registrationId.HasValue)
                         {
-                            await RegisterAsync(request, affiliateId, brandId);
+                            await RegisterAsync(request, affiliateId, brandId, offerId);
                         }
                         else
                         {
@@ -83,7 +85,7 @@ namespace MarketingBox.Postback.Service.Services
                     {
                         if (!registrationId.HasValue)
                         {
-                            registration = await RegisterAsync(request, affiliateId, brandId);
+                            registration = await RegisterAsync(request, affiliateId, brandId, offerId);
                             registrationId = registration.Id;
                         }
 
@@ -94,7 +96,7 @@ namespace MarketingBox.Postback.Service.Services
                     {
                         if (!registrationId.HasValue)
                         {
-                            registration = await RegisterAsync(request, affiliateId, brandId);
+                            registration = await RegisterAsync(request, affiliateId, brandId, offerId);
                             registrationId = registration.Id;
                         }
 
@@ -151,7 +153,7 @@ namespace MarketingBox.Postback.Service.Services
         }
 
         private async Task<Registration.Service.Domain.Models.Registrations.Registration> RegisterAsync(
-            BrandPostbackRequest request, long affiliateId, long brandId)
+            BrandPostbackRequest request, long affiliateId, long brandId, long? offerId)
         {
             _logger.LogInformation("Register: {@Context} ", request);
 
@@ -159,6 +161,7 @@ namespace MarketingBox.Postback.Service.Services
 
             var registrationRequest = _mapper.Map<RegistrationCreateS2SRequest>(request);
             registrationRequest.BrandId = brandId;
+            registrationRequest.OfferId = offerId;
             registrationRequest.AuthInfo = new AffiliateAuthInfo
             {
                 AffiliateId = affiliateId,
