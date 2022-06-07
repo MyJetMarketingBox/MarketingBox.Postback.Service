@@ -80,12 +80,14 @@ namespace MarketingBox.Postback.Service.Repositories
                 
                 if (request.FromDate.HasValue)
                 {
-                    query = query.Where(x => x.Date >= request.FromDate.Value.Date);
+                    var date = request.FromDate.Value.Date;
+                    query = query.Where(x => x.Date >= date);
                 }
 
                 if (request.ToDate.HasValue)
                 {
-                    query = query.Where(x => x.Date <= request.ToDate.Value.Date.Add(new TimeSpan(23, 59, 59)));
+                    var date = request.ToDate.Value.Date.Add(new TimeSpan(23, 59, 59));
+                    query = query.Where(x => x.Date <= date);
                 }
 
                 var total = query.Count();
