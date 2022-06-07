@@ -2,7 +2,6 @@ using System;
 using System.Threading.Tasks;
 using AutoMapper;
 using MarketingBox.Affiliate.Service.Client.Interfaces;
-using MarketingBox.Affiliate.Service.Grpc.Requests.Offers;
 using MarketingBox.Postback.Service.Domain.Models;
 using MarketingBox.Postback.Service.Domain.Models.Requests;
 using MarketingBox.Postback.Service.Grpc;

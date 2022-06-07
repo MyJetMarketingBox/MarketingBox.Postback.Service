@@ -26,7 +26,7 @@
     <PackageReference Include="MyJetWallet.Sdk.NoSql" Version="2.2.3" />
     <PackageReference Include="MyJetWallet.Sdk.Service" Version="2.2.3" />
 	<PackageReference Include="MyJetWallet.Sdk.ServiceBus" Version="2.2.4" />
-	<PackageReference Include="MarketingBox.Registration.Service.Client" Version="3.4.7" />
+	<PackageReference Include="MarketingBox.Registration.Service.Client" Version="3.4.9" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="prometheus-net.AspNetCore" Version="6.0.0" />
     <PackageReference Include="protobuf-net.Grpc.AspNetCore" Version="1.0.152" />
