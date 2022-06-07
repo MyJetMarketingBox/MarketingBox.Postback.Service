@@ -72,15 +72,20 @@ namespace MarketingBox.Postback.Service.Repositories
                 {
                     query = query.Where(x => x.EventType == request.EventType.Value);
                 }
-
+                
+                if (request.HttpQueryType.HasValue)
+                {
+                    query = query.Where(x => x.HttpQueryType == request.HttpQueryType.Value);
+                }
+                
                 if (request.FromDate.HasValue)
                 {
-                    query = query.Where(x => x.Date >= request.FromDate.Value);
+                    query = query.Where(x => x.Date >= request.FromDate.Value.Date);
                 }
 
                 if (request.ToDate.HasValue)
                 {
-                    query = query.Where(x => x.Date <= request.ToDate.Value.Add(new TimeSpan(23, 59, 59)));
+                    query = query.Where(x => x.Date <= request.ToDate.Value.Date.Add(new TimeSpan(23, 59, 59)));
                 }
 
                 var total = query.Count();
