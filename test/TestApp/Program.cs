@@ -2,7 +2,9 @@
 using System.Threading.Tasks;
 using ProtoBuf.Grpc.Client;
 using MarketingBox.Postback.Service.Client;
-using MarketingBox.Postback.Service.Grpc.Models;
+using MarketingBox.Postback.Service.Domain.Models;
+using MarketingBox.Postback.Service.Domain.Models.Requests;
+using ResponseStatus = MarketingBox.Sdk.Common.Models.Grpc.ResponseStatus;
 
 namespace TestApp
 {
@@ -16,11 +18,11 @@ namespace TestApp
             Console.ReadLine();
 
 
-            var factory = new PostbackServiceClientFactory("http://localhost:5001");
+            var factory = new PostbackServiceClientFactory("http://localhost:80");
             var client = factory.GetPostbackService();
 
-            var resp = await client.GetReferenceAsync(new ByAffiliateIdRequest() { AffiliateId = 1 });
-            if (resp?.StatusCode == StatusCode.Ok)
+            var resp = await client.GetAsync(new ByAffiliateIdRequest() { AffiliateId = 1 });
+            if (resp?.Status == ResponseStatus.Ok)
             {
                 var data = resp.Data;
                 Console.WriteLine(data?.AffiliateId);
@@ -33,7 +35,7 @@ namespace TestApp
             }
             else
             {
-                Console.WriteLine(resp?.ErrorMessage);
+                Console.WriteLine(resp?.Error?.ErrorMessage);
             }
 
             Console.WriteLine("End");

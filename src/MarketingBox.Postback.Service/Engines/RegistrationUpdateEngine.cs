@@ -1,7 +1,6 @@
 ﻿using MarketingBox.Postback.Service.Domain;
 using MarketingBox.Postback.Service.Domain.Models;
 using MarketingBox.Postback.Service.Helper;
-using MarketingBox.Registration.Service.Domain.Registrations;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
@@ -10,6 +9,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using MarketingBox.Registration.Service.Messages.Registrations;
+using MarketingBox.Sdk.Common.Enums;
 
 namespace MarketingBox.Postback.Service.Engines
 {
@@ -39,7 +39,7 @@ namespace MarketingBox.Postback.Service.Engines
                 HttpResponseMessage postbackResponse;
                 var affiliateId = message.RouteInfo.AffiliateId;
                 var additionalInfo = message.AdditionalInfo;
-                var registrationUId = message.GeneralInfo.RegistrationUId;
+                var registrationUId = message.GeneralInfoInternal.RegistrationUid;
                 EventType eventType;
                 switch (message.RouteInfo.Status)
                 {
@@ -61,14 +61,15 @@ namespace MarketingBox.Postback.Service.Engines
                     return;
                 }
 
-                var referenceEntity = await _repository.GetReferenceAsync(affiliateId);
+                var referenceEntity = await _repository.GetAsync(affiliateId);
 
                 var log = new EventReferenceLog
                 {
                     AffiliateId = affiliateId,
                     RegistrationUId = registrationUId,
                     EventMessage = JsonConvert.SerializeObject(message),
-                    EventType = eventType
+                    EventType = eventType,
+                    TenantId = message.TenantId
                 };
 
                 var reference = eventType switch
@@ -103,9 +104,9 @@ namespace MarketingBox.Postback.Service.Engines
                 }
 
                 log.PostbackReference = postbackReference;
-                log.ResponseStatus = postbackResponse is {StatusCode: HttpStatusCode.OK}
-                    ? ResponseStatus.Ok
-                    : ResponseStatus.Failed;
+                log.PostbackResponseStatus = postbackResponse is {StatusCode: HttpStatusCode.OK}
+                    ? PostbackResponseStatus.Ok
+                    : PostbackResponseStatus.Failed;
                 log.PostbackResponse = JsonConvert.SerializeObject(postbackResponse);
                 log.HttpQueryType = referenceEntity.HttpQueryType;
                 log.Date = DateTime.UtcNow;

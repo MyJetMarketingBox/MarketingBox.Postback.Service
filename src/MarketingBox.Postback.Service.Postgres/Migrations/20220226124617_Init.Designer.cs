@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MarketingBox.Postback.Service.Postgres.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20220204151407_Init")]
+    [Migration("20220226124617_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -20,40 +20,25 @@ namespace MarketingBox.Postback.Service.Postgres.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("postback-service")
-                .HasAnnotation("ProductVersion", "6.0.1")
+                .HasAnnotation("ProductVersion", "6.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("MarketingBox.Postback.Service.Postgres.Entities.AffiliateReferenceLogEntity", b =>
+            modelBuilder.Entity("MarketingBox.Postback.Service.Domain.Models.Affiliate", b =>
                 {
                     b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<long>("AffiliateId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("Operation")
-                        .HasColumnType("integer");
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AffiliateId");
-
-                    b.HasIndex("Date");
-
-                    b.HasIndex("Operation");
-
-                    b.ToTable("affiliatereferencelog", "postback-service");
+                    b.ToTable("affiliates", "postback-service");
                 });
 
-            modelBuilder.Entity("MarketingBox.Postback.Service.Postgres.Entities.EventReferenceLogEntity", b =>
+            modelBuilder.Entity("MarketingBox.Postback.Service.Domain.Models.EventReferenceLog", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -82,14 +67,11 @@ namespace MarketingBox.Postback.Service.Postgres.Migrations
                     b.Property<string>("PostbackResponse")
                         .HasColumnType("text");
 
+                    b.Property<int>("PostbackResponseStatus")
+                        .HasColumnType("integer");
+
                     b.Property<string>("RegistrationUId")
                         .HasColumnType("text");
-
-                    b.Property<string>("RequestBody")
-                        .HasColumnType("text");
-
-                    b.Property<int>("ResponseStatus")
-                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -101,12 +83,12 @@ namespace MarketingBox.Postback.Service.Postgres.Migrations
 
                     b.HasIndex("HttpQueryType");
 
-                    b.HasIndex("ResponseStatus");
+                    b.HasIndex("PostbackResponseStatus");
 
                     b.ToTable("eventreferencelog", "postback-service");
                 });
 
-            modelBuilder.Entity("MarketingBox.Postback.Service.Postgres.Entities.ReferenceEntity", b =>
+            modelBuilder.Entity("MarketingBox.Postback.Service.Domain.Models.Reference", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -138,6 +120,70 @@ namespace MarketingBox.Postback.Service.Postgres.Migrations
                         .IsUnique();
 
                     b.ToTable("reference", "postback-service");
+                });
+
+            modelBuilder.Entity("MarketingBox.Postback.Service.Postgres.Entities.AffiliateReferenceLogEntity", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("AffiliateId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Operation")
+                        .HasColumnType("integer");
+
+                    b.Property<long?>("ReferenceId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AffiliateId");
+
+                    b.HasIndex("Date");
+
+                    b.HasIndex("Operation");
+
+                    b.ToTable("affiliatereferencelog", "postback-service");
+                });
+
+            modelBuilder.Entity("MarketingBox.Postback.Service.Domain.Models.EventReferenceLog", b =>
+                {
+                    b.HasOne("MarketingBox.Postback.Service.Domain.Models.Affiliate", "Affiliate")
+                        .WithMany()
+                        .HasForeignKey("AffiliateId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Affiliate");
+                });
+
+            modelBuilder.Entity("MarketingBox.Postback.Service.Domain.Models.Reference", b =>
+                {
+                    b.HasOne("MarketingBox.Postback.Service.Domain.Models.Affiliate", "Affiliate")
+                        .WithOne()
+                        .HasForeignKey("MarketingBox.Postback.Service.Domain.Models.Reference", "AffiliateId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Affiliate");
+                });
+
+            modelBuilder.Entity("MarketingBox.Postback.Service.Postgres.Entities.AffiliateReferenceLogEntity", b =>
+                {
+                    b.HasOne("MarketingBox.Postback.Service.Domain.Models.Affiliate", "Affiliate")
+                        .WithMany()
+                        .HasForeignKey("AffiliateId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Affiliate");
                 });
 #pragma warning restore 612, 618
         }

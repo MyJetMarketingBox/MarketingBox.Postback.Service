@@ -1,5 +1,12 @@
 ﻿using Autofac;
+using MarketingBox.Affiliate.Service.Client;
+using MarketingBox.Affiliate.Service.MyNoSql.Affiliates;
+using MarketingBox.Postback.Service.Messages;
+using MarketingBox.Registration.Service.Client;
 using MarketingBox.Registration.Service.Messages.Registrations;
+using MarketingBox.Reporting.Service.Client;
+using Microsoft.Extensions.Logging;
+using MyJetWallet.Sdk.NoSql;
 using MyJetWallet.Sdk.ServiceBus;
 using MyServiceBus.Abstractions;
 
@@ -9,15 +16,26 @@ namespace MarketingBox.Postback.Service.Modules
     {
         protected override void Load(ContainerBuilder builder)
         {
+            var noSqlClient = builder.CreateNoSqlClient(
+                Program.ReloadedSettings(e => e.MyNoSqlReaderHostPort).Invoke(),
+                new LoggerFactory());
+
             var serviceBusClient = builder.RegisterMyServiceBusTcpClient(
                 Program.ReloadedSettings(e => e.MarketingBoxServiceBusHostPort),
                 Program.LogFactory);
+
+            builder.RegisterMyServiceBusPublisher<TrackingLinkUpdateRegistrationIdMessage>(
+                serviceBusClient, TrackingLinkUpdateRegistrationIdMessage.Topic, false);
 
             builder.RegisterMyServiceBusSubscriberSingle<RegistrationUpdateMessage>(
                 serviceBusClient,
                 RegistrationUpdateMessage.Topic,
                 "MarketingBox-Postback-Service",
                 TopicQueueType.PermanentWithSingleConnection);
+            
+            builder.RegisterAffiliateClient(Program.Settings.AffiliateServiceUrl, noSqlClient);
+            builder.RegisterReportingServiceClient(Program.Settings.ReportingServiceUrl);
+            builder.RegisterRegistrationServiceClient(Program.Settings.RegistrationServiceUrl);
         }
     }
 }

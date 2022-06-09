@@ -1,13 +1,16 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using MarketingBox.Postback.Service.Domain.Models;
+using MarketingBox.Postback.Service.Domain.Models.Requests;
 
 namespace MarketingBox.Postback.Service.Domain
 {
     public interface IReferenceRepository
     {
-        Task DeleteReferenceAsync(long AffiliateId);
-        Task<Reference> GetReferenceAsync(long AffiliateId);
-        Task<Reference> CreateReferenceAsync(Reference request);
-        Task<Reference> UpdateReferenceAsync(Reference request);
+        Task<Reference> DeleteAsync(long affiliateId);
+        Task<Reference> GetAsync(long affiliateId);
+        Task<(IReadOnlyCollection<Reference>,int)> SearchAsync(SearchReferenceRequest request);
+        Task<Reference> CreateAsync(CreateOrUpdateReferenceRequest request);
+        Task<Reference> UpdateAsync(CreateOrUpdateReferenceRequest request);
     }
 }

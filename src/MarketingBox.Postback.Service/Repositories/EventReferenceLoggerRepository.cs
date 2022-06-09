@@ -1,30 +1,23 @@
-﻿using AutoMapper;
-using MarketingBox.Postback.Service.Domain;
+﻿using MarketingBox.Postback.Service.Domain;
 using MarketingBox.Postback.Service.Domain.Models;
 using MarketingBox.Postback.Service.Postgres;
-using MarketingBox.Postback.Service.Postgres.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using MarketingBox.Postback.Service.Domain.Exceptions;
+using MarketingBox.Postback.Service.Domain.Models.Requests;
 
 namespace MarketingBox.Postback.Service.Repositories
 {
-    public class EventReferenceLoggerRepository : 
+    public class EventReferenceLoggerRepository :
         RepositoryBase<EventReferenceLoggerRepository>,
         IEventReferenceLoggerRepository
     {
-        private readonly IMapper _mapper;
-
         public EventReferenceLoggerRepository(
             ILogger<EventReferenceLoggerRepository> logger,
-            DatabaseContextFactory factory,
-            IMapper mapper) : base(logger, factory)
+            DatabaseContextFactory factory) : base(logger, factory)
         {
-            _mapper = mapper;
         }
 
         public async Task CreateAsync(EventReferenceLog eventReferenceLog)
@@ -32,30 +25,10 @@ namespace MarketingBox.Postback.Service.Repositories
             try
             {
                 await using var context = _factory.Create();
-                await context.EventReferenceLogs.AddAsync(_mapper.Map<EventReferenceLogEntity>(eventReferenceLog));
+                await context.EventReferenceLogs.AddAsync(eventReferenceLog);
                 await context.SaveChangesAsync();
 
-                _logger.LogInformation("Log {eventReferenceLog} was created.", JsonConvert.SerializeObject(eventReferenceLog));
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, ex.Message);
-                throw;
-            }
-
-        }
-
-        public async Task<EventReferenceLog[]> GetAsync(long affiliateId)
-        {
-            try
-            {
-                await using var context = _factory.Create();
-                var result = context.EventReferenceLogs.Where(x => x.AffiliateId == affiliateId).ToArray();
-                if (result.Length == 0)
-                {
-                    throw new NotFoundException(nameof(affiliateId), affiliateId);
-                }
-                return result;
+                _logger.LogInformation("Log {@EventReferenceLog} was created.", eventReferenceLog);
             }
             catch (Exception ex)
             {
@@ -64,41 +37,63 @@ namespace MarketingBox.Postback.Service.Repositories
             }
         }
 
-        public async Task<EventReferenceLog[]> SearchAsync(FilterLogsRequest request)
+        public async Task<(EventReferenceLog[], int)> SearchAsync(FilterLogsRequest request)
         {
             try
             {
                 await using var context = _factory.Create();
-                var query = context.EventReferenceLogs.AsQueryable();
-                if(request.AffiliateId.HasValue)
+                var query = context.EventReferenceLogs
+                    .Include(x => x.Affiliate)
+                    .AsQueryable();
+                if (request.AffiliateIds.Any())
                 {
-                    query = query.Where(x=> x.AffiliateId == request.AffiliateId.Value);
+                    query = query.Where(x => request.AffiliateIds.Contains(x.AffiliateId));
                 }
+
+                if (!string.IsNullOrEmpty(request.AffiliateName))
+                {
+                    query = query.Where(x =>
+                        x.Affiliate.Name.ToLower().Contains(request.AffiliateName.ToLowerInvariant()));
+                }
+
+                if (!string.IsNullOrEmpty(request.TenantId))
+                {
+                    query = query.Where(x =>
+                        x.TenantId.Equals(request.TenantId));
+                }
+
+                if (!string.IsNullOrEmpty(request.RegistrationUId))
+                {
+                    query = query.Where(x =>
+                        x.RegistrationUId.ToLower().Contains(request.RegistrationUId.ToLowerInvariant()));
+                }
+
                 if (request.EventType.HasValue)
                 {
                     query = query.Where(x => x.EventType == request.EventType.Value);
                 }
+                
                 if (request.HttpQueryType.HasValue)
                 {
                     query = query.Where(x => x.HttpQueryType == request.HttpQueryType.Value);
                 }
-                if (request.ResponseStatus.HasValue)
-                {
-                    query = query.Where(x => x.ResponseStatus == request.ResponseStatus.Value);
-                }
+                
                 if (request.FromDate.HasValue)
                 {
-                    query = query.Where(x => x.Date >= request.FromDate.Value);
-                }
-                if (request.ToDate.HasValue)
-                {
-                    query = query.Where(x => x.Date <= request.ToDate.Value.Add(new TimeSpan(23, 59, 59)));
+                    var date = request.FromDate.Value.Date;
+                    query = query.Where(x => x.Date >= date);
                 }
 
-                var limit = request.Take <= 0 ? 1000 : request.Take;
+                if (request.ToDate.HasValue)
+                {
+                    var date = request.ToDate.Value.Date.Add(new TimeSpan(23, 59, 59));
+                    query = query.Where(x => x.Date <= date);
+                }
+
+                var total = query.Count();
                 if (request.Asc)
                 {
-                    if (request.Cursor != null)
+                    if (request.Cursor.HasValue)
                     {
                         query = query.Where(x => x.Id > request.Cursor);
                     }
@@ -107,7 +102,7 @@ namespace MarketingBox.Postback.Service.Repositories
                 }
                 else
                 {
-                    if (request.Cursor != null)
+                    if (request.Cursor.HasValue)
                     {
                         query = query.Where(x => x.Id < request.Cursor);
                     }
@@ -115,11 +110,15 @@ namespace MarketingBox.Postback.Service.Repositories
                     query = query.OrderByDescending(x => x.Id);
                 }
 
-                query = query.Take(limit);
+                if (request.Take.HasValue)
+                {
+                    query = query.Take(request.Take.Value);
+                }
 
                 await query.LoadAsync();
+                var result = query.ToArray();
 
-                return query.ToArray();
+                return (result, total);
             }
             catch (Exception ex)
             {

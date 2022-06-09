@@ -1,65 +1,45 @@
-﻿using AutoMapper;
-using MarketingBox.Postback.Service.Domain;
+﻿using MarketingBox.Postback.Service.Domain;
 using MarketingBox.Postback.Service.Grpc;
-using MarketingBox.Postback.Service.Grpc.Models;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using MarketingBox.Postback.Service.Helper;
+using MarketingBox.Postback.Service.Domain.Models;
+using MarketingBox.Sdk.Common.Extensions;
+using MarketingBox.Sdk.Common.Models.Grpc;
+using FilterLogsRequest = MarketingBox.Postback.Service.Domain.Models.Requests.FilterLogsRequest;
+using ResponseStatus = MarketingBox.Sdk.Common.Models.Grpc.ResponseStatus;
 
 namespace MarketingBox.Postback.Service.Services
 {
     public class EventReferenceLogService : IEventReferenceLogService
     {
         private readonly ILogger<EventReferenceLogService> _logger;
-        private readonly IMapper _mapper;
         private readonly IEventReferenceLoggerRepository _eventReferenceLogger;
 
         public EventReferenceLogService(
             ILogger<EventReferenceLogService> logger,
-            IMapper mapper,
             IEventReferenceLoggerRepository eventReferenceLogger)
         {
             _logger = logger;
-            _mapper = mapper;
             _eventReferenceLogger = eventReferenceLogger;
         }
-        public async Task<Response<IReadOnlyCollection<EventReferenceLog>>> GetLogsAsync(ByAffiliateIdRequest request)
+
+        public async Task<Response<IReadOnlyCollection<EventReferenceLog>>> SearchAsync(FilterLogsRequest request)
         {
             try
             {
-                _logger.LogInformation("Getting logs for affiliate: {AffiliateId}", request.AffiliateId);
+                request.ValidateEntity();
 
-                var res = await _eventReferenceLogger.GetAsync(request.AffiliateId);
+                _logger.LogInformation("Searching logs by filter: {@FilterLogsRequest}", request);
 
-                return new Response<IReadOnlyCollection<EventReferenceLog>>
-                {
-                    StatusCode = StatusCode.Ok,
-                    Data = res.Select(_mapper.Map<EventReferenceLog>).ToArray()
-                };
-            }
-            catch(Exception ex)
-            {
-                return ex.FailedResponse<IReadOnlyCollection<EventReferenceLog>>();
-            }
-        }
-
-
-        public async Task<Response<IReadOnlyCollection<EventReferenceLog>>> SearchLogsAsync(Grpc.Models.FilterLogsRequest request)
-        {
-            try
-            {
-                _logger.LogInformation("Searching logs by filter: {FilterLogsRequest}", JsonConvert.SerializeObject(request));
-
-                var res = await _eventReferenceLogger.SearchAsync(_mapper.Map<Domain.FilterLogsRequest>(request));
+                var (res, total) = await _eventReferenceLogger.SearchAsync(request);
 
                 return new Response<IReadOnlyCollection<EventReferenceLog>>
                 {
-                    StatusCode = StatusCode.Ok,
-                    Data = res.Select(_mapper.Map<EventReferenceLog>).ToArray()
+                    Status = ResponseStatus.Ok,
+                    Data = res,
+                    Total = total
                 };
             }
             catch (Exception ex)

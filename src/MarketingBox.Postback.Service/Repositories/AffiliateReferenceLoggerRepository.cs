@@ -18,7 +18,7 @@ namespace MarketingBox.Postback.Service.Repositories
         {
         }
 
-        public async Task CreateAsync(long affiliateId, OperationType operationType)
+        public async Task CreateAsync(long affiliateId, long referenceId, string tenantId, OperationType operationType)
         {
             try
             {
@@ -28,12 +28,16 @@ namespace MarketingBox.Postback.Service.Repositories
                     {
                         AffiliateId = affiliateId,
                         Date = DateTime.UtcNow,
-                        Operation = operationType
+                        Operation = operationType,
+                        ReferenceId = referenceId,
+                        TenantId = tenantId
                     });
                 await context.SaveChangesAsync();
 
 
-            _logger.LogInformation("Operation {Operation} was logged for affiliate {AffiliateId}.", operationType, affiliateId);
+                _logger.LogInformation(
+                    "Operation {Operation} was logged for affiliate {AffiliateId} for reference {ReferenceId}.",
+                    operationType, affiliateId, referenceId);
             }
             catch (Exception ex)
             {

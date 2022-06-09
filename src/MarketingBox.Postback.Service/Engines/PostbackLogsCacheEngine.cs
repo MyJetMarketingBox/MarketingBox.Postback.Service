@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Autofac;
 using MarketingBox.Postback.Service.Domain;
+using MarketingBox.Postback.Service.Domain.Models.Requests;
 using Microsoft.Extensions.Logging;
 
 namespace MarketingBox.Postback.Service.Engines
@@ -38,7 +39,7 @@ namespace MarketingBox.Postback.Service.Engines
                     .GetAwaiter()
                     .GetResult();
 
-                _cache = result
+                _cache = result.Item1
                     .Select(p => new PostbackLogsCacheModel(p.RegistrationUId, p.EventType))
                     .Reverse()
                     .ToHashSet();

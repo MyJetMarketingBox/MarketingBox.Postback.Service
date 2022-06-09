@@ -1,13 +1,16 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using MarketingBox.Postback.Service.Grpc;
-using MarketingBox.Postback.Service.Grpc.Models;
 using MarketingBox.Postback.Service.Domain.Models;
 using MarketingBox.Postback.Service.Domain;
-using AutoMapper;
 using System;
+using System.Collections.Generic;
 using System.Text.Json;
-using MarketingBox.Postback.Service.Helper;
+using MarketingBox.Affiliate.Service.Client.Interfaces;
+using MarketingBox.Postback.Service.Domain.Models.Requests;
+using MarketingBox.Sdk.Common.Extensions;
+using MarketingBox.Sdk.Common.Models.Grpc;
+using ResponseStatus = MarketingBox.Sdk.Common.Models.Grpc.ResponseStatus;
 
 namespace MarketingBox.Postback.Service.Services
 {
@@ -15,101 +18,165 @@ namespace MarketingBox.Postback.Service.Services
     {
         private readonly ILogger<PostbackService> _logger;
         private readonly IReferenceRepository _referenceRepository;
-        private readonly IMapper _mapper;
         private readonly IAffiliateReferenceLoggerRepository _loggerRepository;
+        private readonly IAffiliateClient _affiliateClient;
+        private readonly IAffiliateRepository _affiliateRepository;
 
         public PostbackService(ILogger<PostbackService> logger,
             IReferenceRepository referenceRepository,
-            IMapper mapper,
-            IAffiliateReferenceLoggerRepository loggerRepository)
+            IAffiliateReferenceLoggerRepository loggerRepository,
+            IAffiliateRepository affiliateRepository,
+            IAffiliateClient affiliateClient)
         {
             _logger = logger;
             _referenceRepository = referenceRepository;
-            _mapper = mapper;
             _loggerRepository = loggerRepository;
+            _affiliateRepository = affiliateRepository;
+            _affiliateClient = affiliateClient;
         }
 
-        public async Task<Response<bool>> DeleteReferenceAsync(ByAffiliateIdRequest request)
+        public async Task<Response<bool>> DeleteAsync(ByAffiliateIdRequest request)
         {
             try
             {
-                _logger.LogInformation("Deleting reference entity for affiliate with id {AffiliateId}", request.AffiliateId);
+                request.ValidateEntity();
 
-                await _referenceRepository.DeleteReferenceAsync(request.AffiliateId);
+                _logger.LogInformation("Deleting reference entity for affiliate with id {AffiliateId}",
+                    request.AffiliateId);
 
-                await _loggerRepository.CreateAsync(request.AffiliateId, OperationType.Delete);
+                var res = await _referenceRepository.DeleteAsync(request.AffiliateId.Value);
 
-                return new Response<bool> { StatusCode = StatusCode.Ok, Data = true };
+                await _loggerRepository.CreateAsync(
+                    request.AffiliateId.Value,
+                    res.Id,
+                    res.TenantId,
+                    OperationType.Delete);
+
+                return new Response<bool> {Status = ResponseStatus.Ok, Data = true};
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return ex.FailedResponse<bool>();
             }
         }
 
-        public async Task<Response<ReferenceResponse>> GetReferenceAsync(ByAffiliateIdRequest request)
+        public async Task<Response<Reference>> GetAsync(ByAffiliateIdRequest request)
         {
             try
             {
-                _logger.LogInformation("Getting reference entity for affiliate with id {AffiliateId}", request.AffiliateId);
+                request.ValidateEntity();
 
-                var res = await _referenceRepository.GetReferenceAsync(request.AffiliateId);
+                _logger.LogInformation("Getting reference entity for affiliate with id {AffiliateId}",
+                    request.AffiliateId);
 
-                await _loggerRepository.CreateAsync(request.AffiliateId, OperationType.Get);
+                var res = await _referenceRepository.GetAsync(request.AffiliateId.Value);
 
-                return new Response<ReferenceResponse>
+                await _loggerRepository.CreateAsync(request.AffiliateId.Value, res.Id, res.TenantId, OperationType.Get);
+
+                return new Response<Reference>
                 {
-                    StatusCode = StatusCode.Ok,
-                    Data = _mapper.Map<ReferenceResponse>(res)
+                    Status = ResponseStatus.Ok,
+                    Data = res
                 };
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                return ex.FailedResponse<ReferenceResponse>();
+                return ex.FailedResponse<Reference>();
             }
         }
 
-        public async Task<Response<ReferenceResponse>> CreateReferenceAsync(FullReferenceRequest request)
+        public async Task<Response<IReadOnlyCollection<Reference>>> SearchAsync(SearchReferenceRequest request)
         {
             try
             {
+                request.ValidateEntity();
+
+                _logger.LogInformation("Search reference entities for request {@Request}",
+                    request);
+
+                var (res, total) = await _referenceRepository.SearchAsync(request);
+
+                return new Response<IReadOnlyCollection<Reference>>
+                {
+                    Status = ResponseStatus.Ok,
+                    Data = res,
+                    Total = total
+                };
+            }
+            catch (Exception ex)
+            {
+                return ex.FailedResponse<IReadOnlyCollection<Reference>>();
+            }
+        }
+
+        public async Task<Response<Reference>> CreateAsync(CreateOrUpdateReferenceRequest request)
+        {
+            try
+            {
+                request.ValidateEntity();
+
+                _logger.LogInformation("Getting information about affiliate with id {AffiliateId}",
+                    request.AffiliateId);
+                var affiliate =
+                    await _affiliateClient.GetAffiliateById(request.AffiliateId.Value, request.TenantId, true);
+
+                _logger.LogWarning("Saving information about affiliate with id {AffiliateId}",
+                    request.AffiliateId);
+                await _affiliateRepository.CreateAsync(
+                    new Domain.Models.Affiliate
+                    {
+                        Id = affiliate.AffiliateId,
+                        Name = affiliate.GeneralInfo.Username,
+                        TenantId = affiliate.TenantId
+                    });
+
                 _logger.LogInformation("Saving reference: {SaveReferenceRequest}", JsonSerializer.Serialize(request));
 
-                var res = await _referenceRepository.CreateReferenceAsync(_mapper.Map<Reference>(request));
+                var res = await _referenceRepository.CreateAsync(request);
 
-                await _loggerRepository.CreateAsync(request.AffiliateId, OperationType.Create);
+                await _loggerRepository.CreateAsync(
+                    request.AffiliateId.Value,
+                    res.Id,
+                    res.TenantId,
+                    OperationType.Create);
 
-                return new Response<ReferenceResponse>
+                return new Response<Reference>
                 {
-                    StatusCode = StatusCode.Ok,
-                    Data = _mapper.Map<ReferenceResponse>(res)
+                    Status = ResponseStatus.Ok,
+                    Data = res
                 };
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                return ex.FailedResponse<ReferenceResponse>();
+                return ex.FailedResponse<Reference>();
             }
         }
 
-        public async Task<Response<ReferenceResponse>> UpdateReferenceAsync(FullReferenceRequest request)
+        public async Task<Response<Reference>> UpdateAsync(CreateOrUpdateReferenceRequest request)
         {
             try
             {
-                _logger.LogInformation("Updating reference: {UpdateReferenceRequest}", JsonSerializer.Serialize(request));
+                request.ValidateEntity();
 
-                var res = await _referenceRepository.UpdateReferenceAsync(_mapper.Map<Reference>(request));
+                _logger.LogInformation("Updating reference: {UpdateReferenceRequest}", request);
 
-                await _loggerRepository.CreateAsync(request.AffiliateId, OperationType.Update);
+                var res = await _referenceRepository.UpdateAsync(request);
 
-                return new Response<ReferenceResponse>
+                await _loggerRepository.CreateAsync(
+                    request.AffiliateId.Value,
+                    res.Id,
+                    res.TenantId,
+                    OperationType.Update);
+
+                return new Response<Reference>
                 {
-                    StatusCode = StatusCode.Ok,
-                    Data = _mapper.Map<ReferenceResponse>(res)
+                    Status = ResponseStatus.Ok,
+                    Data = res
                 };
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                return ex.FailedResponse<ReferenceResponse>();
+                return ex.FailedResponse<Reference>();
             }
         }
     }

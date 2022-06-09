@@ -1,4 +1,5 @@
-﻿using MarketingBox.Postback.Service.Postgres.Entities;
+﻿using MarketingBox.Postback.Service.Domain.Models;
+using MarketingBox.Postback.Service.Postgres.Entities;
 using Microsoft.EntityFrameworkCore;
 using MyJetWallet.Sdk.Postgres;
 
@@ -11,10 +12,13 @@ namespace MarketingBox.Postback.Service.Postgres
         private const string ReferenceTableName = "reference";
         private const string AffiliateReferenceLogTableName = "affiliatereferencelog";
         private const string EventReferenceLogTableName = "eventreferencelog";
+        private const string AffiliatesTableName = "affiliates";
 
-        public DbSet<ReferenceEntity> References { get; set; }
+        public DbSet<Reference> References { get; set; }
         public DbSet<AffiliateReferenceLogEntity> AffiliateReferenceLogs { get; set; }
-        public DbSet<EventReferenceLogEntity> EventReferenceLogs { get; set; }
+        public DbSet<EventReferenceLog> EventReferenceLogs { get; set; }
+
+        public DbSet<Affiliate> Affiliates { get; set; }
         
         public DatabaseContext(DbContextOptions options) : base(options)
         {
@@ -32,18 +36,37 @@ namespace MarketingBox.Postback.Service.Postgres
         {
             modelBuilder.HasDefaultSchema(Schema);
 
-            SetReferenceEntity(modelBuilder);
+            SetReference(modelBuilder);
             SetAffiliateReferenceLogEntity(modelBuilder);
-            SetEventReferenceLogEntity(modelBuilder);
+            SetEventReferenceLog(modelBuilder);
+            SetAffiliates(modelBuilder);
 
             base.OnModelCreating(modelBuilder);
         }
 
-        private static void SetReferenceEntity(ModelBuilder modelBuilder)
+        private static void SetAffiliates(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<ReferenceEntity>().ToTable(ReferenceTableName);
-            modelBuilder.Entity<ReferenceEntity>().HasKey(e => e.Id);
-            modelBuilder.Entity<ReferenceEntity>().HasIndex(e => e.AffiliateId).IsUnique();
+            modelBuilder.Entity<Affiliate>().ToTable(AffiliatesTableName);
+            modelBuilder.Entity<Affiliate>().HasKey(e => e.Id);
+            modelBuilder.Entity<Affiliate>()
+                .HasOne<Reference>()
+                .WithOne(x=>x.Affiliate)
+                .HasForeignKey<Reference>(x => x.AffiliateId);
+            modelBuilder.Entity<Affiliate>()
+                .HasMany<EventReferenceLog>()
+                .WithOne(x=>x.Affiliate)
+                .HasForeignKey(x => x.AffiliateId);
+            modelBuilder.Entity<Affiliate>()
+                .HasMany<AffiliateReferenceLogEntity>()
+                .WithOne(x=>x.Affiliate)
+                .HasForeignKey(x => x.AffiliateId);
+        }
+        
+        private static void SetReference(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Reference>().ToTable(ReferenceTableName);
+            modelBuilder.Entity<Reference>().HasKey(e => e.Id);
+            modelBuilder.Entity<Reference>().HasIndex(e => e.AffiliateId).IsUnique();
         }
 
         private static void SetAffiliateReferenceLogEntity(ModelBuilder modelBuilder)
@@ -54,16 +77,17 @@ namespace MarketingBox.Postback.Service.Postgres
             modelBuilder.Entity<AffiliateReferenceLogEntity>().HasIndex(e => e.Operation);
             modelBuilder.Entity<AffiliateReferenceLogEntity>().HasIndex(e => e.Date);
         }
+        
 
-        private static void SetEventReferenceLogEntity(ModelBuilder modelBuilder)
+        private static void SetEventReferenceLog(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<EventReferenceLogEntity>().ToTable(EventReferenceLogTableName);
-            modelBuilder.Entity<EventReferenceLogEntity>().HasKey(e => e.Id);
-            modelBuilder.Entity<EventReferenceLogEntity>().HasIndex(e => e.AffiliateId);
-            modelBuilder.Entity<EventReferenceLogEntity>().HasIndex(e => e.EventType);
-            modelBuilder.Entity<EventReferenceLogEntity>().HasIndex(e => e.ResponseStatus);
-            modelBuilder.Entity<EventReferenceLogEntity>().HasIndex(e => e.HttpQueryType);
-            modelBuilder.Entity<EventReferenceLogEntity>().HasIndex(e => e.Date);
+            modelBuilder.Entity<EventReferenceLog>().ToTable(EventReferenceLogTableName);
+            modelBuilder.Entity<EventReferenceLog>().HasKey(e => e.Id);
+            modelBuilder.Entity<EventReferenceLog>().HasIndex(e => e.AffiliateId);
+            modelBuilder.Entity<EventReferenceLog>().HasIndex(e => e.EventType);
+            modelBuilder.Entity<EventReferenceLog>().HasIndex(e => e.PostbackResponseStatus);
+            modelBuilder.Entity<EventReferenceLog>().HasIndex(e => e.HttpQueryType);
+            modelBuilder.Entity<EventReferenceLog>().HasIndex(e => e.Date);
         }
     }
 }

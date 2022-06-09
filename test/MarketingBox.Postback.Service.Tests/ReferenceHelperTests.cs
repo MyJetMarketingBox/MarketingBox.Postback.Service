@@ -1,5 +1,5 @@
 using MarketingBox.Postback.Service.Helper;
-using MarketingBox.Registration.Service.Messages.Registrations;
+using MarketingBox.Registration.Service.Domain.Models.Registrations;
 using NUnit.Framework;
 
 namespace MarketingBox.Postback.Service.Tests;

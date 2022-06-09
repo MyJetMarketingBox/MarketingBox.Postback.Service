@@ -1,6 +1,6 @@
 namespace MarketingBox.Postback.Service.Domain.Models
 {
-    public enum ResponseStatus
+    public enum PostbackResponseStatus
     {
         Ok,
         Failed

@@ -54,6 +54,7 @@ namespace MarketingBox.Postback.Service
             {
                 endpoints.MapGrpcSchema<PostbackService, IPostbackService>();
                 endpoints.MapGrpcSchema<EventReferenceLogService, IEventReferenceLogService>();
+                endpoints.MapGrpcSchema<BrandPostbackService, IBrandPostbackService>();
 
                 endpoints.MapGrpcSchemaRegistry();
 
