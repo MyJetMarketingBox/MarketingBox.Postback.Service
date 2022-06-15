@@ -14,8 +14,8 @@
     <PackageReference Include="MarketingBox.Affiliate.Service.Client" Version="2.3.13" />
     <PackageReference Include="MarketingBox.Reporting.Service.Client" Version="3.3.26" />
     <PackageReference Include="MarketingBox.Sdk.Common" Version="1.0.18" />
-	<PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.5" />
-	<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.5">
+	<PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.6" />
+	<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.6">
 	  <PrivateAssets>all</PrivateAssets>
 	  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 	</PackageReference>
