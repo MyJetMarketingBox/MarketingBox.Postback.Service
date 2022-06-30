@@ -19,7 +19,6 @@ namespace MarketingBox.Postback.Service.Repositories
             {
                 await using var context = _factory.Create();
                 await context.Affiliates.Upsert(affiliate).RunAsync();
-                await context.SaveChangesAsync();
             }
             catch (Exception e)
             {
