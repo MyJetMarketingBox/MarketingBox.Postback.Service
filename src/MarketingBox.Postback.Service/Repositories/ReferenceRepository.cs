@@ -52,19 +52,20 @@ namespace MarketingBox.Postback.Service.Repositories
             }
         }
 
-        public async Task<(IReadOnlyCollection<Reference>,int)> SearchAsync(SearchReferenceRequest request)
+        public async Task<(IReadOnlyCollection<Reference>, int)> SearchAsync(SearchReferenceRequest request)
         {
             try
             {
                 await using var context = _factory.Create();
 
-                var query = context.References.Include(x=>x.Affiliate).AsQueryable();
+                var query = context.References.Include(x => x.Affiliate).AsQueryable();
 
                 if (!string.IsNullOrEmpty(request.AffiliateName))
                 {
                     query = query.Where(x =>
                         x.Affiliate.Name.ToLower().Contains(request.AffiliateName.ToLowerInvariant()));
                 }
+
                 if (!string.IsNullOrEmpty(request.TenantId))
                 {
                     query = query.Where(x => x.TenantId.Equals(request.TenantId));
@@ -80,7 +81,7 @@ namespace MarketingBox.Postback.Service.Repositories
                 {
                     query = query.Where(x => x.HttpQueryType == request.HttpQueryType);
                 }
-                
+
                 var total = query.Count();
                 if (request.Asc)
                 {
@@ -134,16 +135,17 @@ namespace MarketingBox.Postback.Service.Repositories
                     throw new AlreadyExistsException(nameof(request.AffiliateId), request.AffiliateId);
                 }
 
-                await context.References.AddAsync(_mapper.Map<Reference>(request));
+                var reference = _mapper.Map<Reference>(request);
+                await context.References.AddAsync(reference);
                 await context.SaveChangesAsync();
 
-                return await GetAsync(request.AffiliateId.Value);
+                return reference;
             }
             catch (Exception ex)
             {
                 _logger.LogError(
                     ex,
-                    "Exception occured while saving reference. Request: {@CreateReferenceRequest}.",
+                    "Exception occured while saving reference. Request: {@CreateReferenceRequest}",
                     request);
                 throw;
             }
@@ -170,13 +172,13 @@ namespace MarketingBox.Postback.Service.Repositories
 
                 await context.SaveChangesAsync();
 
-                return await GetAsync(request.AffiliateId.Value);
+                return entityToUpdate;
             }
             catch (Exception ex)
             {
                 _logger.LogError(
                     ex,
-                    "Exception occured while updating reference. Request: {@CreateReferenceRequest}.",
+                    "Exception occured while updating reference. Request: {@CreateReferenceRequest}",
                     request);
                 throw;
             }
