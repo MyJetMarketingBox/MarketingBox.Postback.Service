@@ -161,6 +161,7 @@ namespace MarketingBox.Postback.Service.Services
             var registrationRequest = _mapper.Map<RegistrationCreateS2SRequest>(request);
             registrationRequest.BrandId = brandId;
             registrationRequest.OfferId = offerId;
+            
             registrationRequest.AuthInfo = new AffiliateAuthInfo
             {
                 AffiliateId = affiliateId,
