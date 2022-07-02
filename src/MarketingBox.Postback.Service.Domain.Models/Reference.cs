@@ -31,5 +31,8 @@ namespace MarketingBox.Postback.Service.Domain.Models
         
         [DataMember(Order = 9)]
         public string TenantId { get; set; }
+        
+        [DataMember(Order = 10)]
+        public long CreatedBy { get; set; }
     }
 }

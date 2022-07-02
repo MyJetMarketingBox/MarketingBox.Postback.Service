@@ -7,13 +7,15 @@ using Microsoft.Extensions.Logging;
 
 namespace MarketingBox.Postback.Service.Repositories
 {
-    public class AffiliateRepository:RepositoryBase<AffiliateRepository>, IAffiliateRepository
+    public class AffiliateRepository : RepositoryBase<AffiliateRepository>, IAffiliateRepository
     {
         public AffiliateRepository(
             ILogger<AffiliateRepository> logger,
-            DatabaseContextFactory factory):base(logger,factory) 
-        { }
-        public async Task CreateAsync(Domain.Models.Affiliate affiliate)
+            DatabaseContextFactory factory) : base(logger, factory)
+        {
+        }
+
+        public async Task UpsertAsync(Domain.Models.Affiliate affiliate)
         {
             try
             {
@@ -22,7 +24,7 @@ namespace MarketingBox.Postback.Service.Repositories
             }
             catch (Exception e)
             {
-                _logger.LogError(e,"Exception while saving affiliate");
+                _logger.LogError(e, "Exception while saving affiliate");
                 throw;
             }
         }

@@ -25,16 +25,16 @@ namespace MarketingBox.Postback.Service.Repositories
             _mapper = mapper;
         }
 
-        public async Task<Reference> DeleteAsync(long affiliateId)
+        public async Task<Reference> DeleteAsync(long postbackId)
         {
             try
             {
                 await using var context = _factory.Create();
-                var entityToDelete = await context.References.FirstOrDefaultAsync(x => x.AffiliateId == affiliateId);
+                var entityToDelete = await context.References.FirstOrDefaultAsync(x => x.Id == postbackId);
 
                 if (entityToDelete is null)
                 {
-                    throw new NotFoundException(nameof(affiliateId), affiliateId);
+                    throw new NotFoundException(nameof(postbackId), postbackId);
                 }
 
                 context.References.Remove(entityToDelete);
@@ -47,7 +47,7 @@ namespace MarketingBox.Postback.Service.Repositories
                 _logger.LogError(
                     ex,
                     "Exception occured while deleting reference. AffiliateId: {AffiliateId}.",
-                    affiliateId);
+                    postbackId);
                 throw;
             }
         }
@@ -121,7 +121,7 @@ namespace MarketingBox.Postback.Service.Repositories
             }
         }
 
-        public async Task<Reference> CreateAsync(CreateOrUpdateReferenceRequest request)
+        public async Task<Reference> CreateAsync(CreateReferenceRequest request)
         {
             try
             {
@@ -138,6 +138,7 @@ namespace MarketingBox.Postback.Service.Repositories
                 var reference = _mapper.Map<Reference>(request);
                 await context.References.AddAsync(reference);
                 await context.SaveChangesAsync();
+                await context.Entry(reference).Reference(x => x.Affiliate).LoadAsync();
 
                 return reference;
             }
@@ -151,17 +152,17 @@ namespace MarketingBox.Postback.Service.Repositories
             }
         }
 
-        public async Task<Reference> UpdateAsync(CreateOrUpdateReferenceRequest request)
+        public async Task<Reference> UpdateAsync(UpdateReferenceRequest request)
         {
             try
             {
                 await using var context = _factory.Create();
                 var entityToUpdate =
-                    await context.References.FirstOrDefaultAsync(x => x.AffiliateId == request.AffiliateId);
+                    await context.References.FirstOrDefaultAsync(x => x.Id == request.PostbackId);
 
                 if (entityToUpdate == null)
                 {
-                    throw new NotFoundException(nameof(request.AffiliateId), request.AffiliateId);
+                    throw new NotFoundException(nameof(request.RequestedBy), request.RequestedBy);
                 }
 
                 entityToUpdate.DepositReference = request.DepositReference;
@@ -184,17 +185,17 @@ namespace MarketingBox.Postback.Service.Repositories
             }
         }
 
-        public async Task<Reference> GetAsync(long affiliateId)
+        public async Task<Reference> GetAsync(long postbackId)
         {
             try
             {
                 await using var context = _factory.Create();
                 var result = await context.References.Include(x => x.Affiliate)
-                    .FirstOrDefaultAsync(x => x.AffiliateId == affiliateId);
+                    .FirstOrDefaultAsync(x => x.Id == postbackId);
 
                 if (result is null)
                 {
-                    throw new NotFoundException(nameof(affiliateId), affiliateId);
+                    throw new NotFoundException(nameof(postbackId), postbackId);
                 }
 
                 return result;
@@ -204,7 +205,7 @@ namespace MarketingBox.Postback.Service.Repositories
                 _logger.LogError(
                     ex,
                     "Exception occured while getting reference. AffiliateId: {AffiliateId}.",
-                    affiliateId);
+                    postbackId);
                 throw;
             }
         }
