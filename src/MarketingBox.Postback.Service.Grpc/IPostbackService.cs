@@ -11,17 +11,17 @@ namespace MarketingBox.Postback.Service.Grpc
     public interface IPostbackService
     {
         [OperationContract]
-        Task<Response<Reference>> GetAsync(ByAffiliateIdRequest request);
+        Task<Response<Reference>> GetAsync(ByIdRequest request);
         [OperationContract]
         Task<Response<IReadOnlyCollection<Reference>>> SearchAsync(SearchReferenceRequest request);
 
         [OperationContract]
-        Task<Response<Reference>> CreateAsync(CreateOrUpdateReferenceRequest request);
+        Task<Response<Reference>> CreateAsync(CreateReferenceRequest request);
 
         [OperationContract]
-        Task<Response<Reference>> UpdateAsync(CreateOrUpdateReferenceRequest request);
+        Task<Response<Reference>> UpdateAsync(UpdateReferenceRequest request);
 
         [OperationContract]
-        Task<Response<bool>> DeleteAsync(ByAffiliateIdRequest request);
+        Task<Response<bool>> DeleteAsync(ByIdRequest request);
     }
 }

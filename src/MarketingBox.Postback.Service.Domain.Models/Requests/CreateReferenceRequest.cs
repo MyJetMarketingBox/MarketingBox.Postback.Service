@@ -6,9 +6,9 @@ using MarketingBox.Sdk.Common.Models;
 namespace MarketingBox.Postback.Service.Domain.Models.Requests
 {
     [DataContract]
-    public class CreateOrUpdateReferenceRequest : ValidatableEntity
+    public class CreateReferenceRequest : ValidatableEntity
     {
-        [DataMember(Order = 1), Required, AdvancedCompare(ComparisonType.GreaterThanOrEqual, 1)]
+        [DataMember(Order = 1), Required, AdvancedCompare(ComparisonType.GreaterThan, 0)]
         public long? AffiliateId { get; set; }
 
         [DataMember(Order = 2)]
@@ -28,5 +28,8 @@ namespace MarketingBox.Postback.Service.Domain.Models.Requests
         
         [DataMember(Order = 7), Required]
         public string TenantId { get; set; }
+        
+        [DataMember(Order = 8), Required, AdvancedCompare(ComparisonType.GreaterThan, 0)]
+        public long? CreatedBy{ get; set; }
     }
 }

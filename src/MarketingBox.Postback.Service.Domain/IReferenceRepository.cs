@@ -7,10 +7,10 @@ namespace MarketingBox.Postback.Service.Domain
 {
     public interface IReferenceRepository
     {
-        Task<Reference> DeleteAsync(long affiliateId);
-        Task<Reference> GetAsync(long affiliateId);
+        Task<Reference> DeleteAsync(long postbackId);
+        Task<Reference> GetAsync(long postbackId);
         Task<(IReadOnlyCollection<Reference>,int)> SearchAsync(SearchReferenceRequest request);
-        Task<Reference> CreateAsync(CreateOrUpdateReferenceRequest request);
-        Task<Reference> UpdateAsync(CreateOrUpdateReferenceRequest request);
+        Task<Reference> CreateAsync(CreateReferenceRequest request);
+        Task<Reference> UpdateAsync(UpdateReferenceRequest request);
     }
 }

@@ -26,7 +26,7 @@ namespace MarketingBox.Postback.Service.Repositories
                 await context.AffiliateReferenceLogs.AddAsync(
                     new AffiliateReferenceLogEntity
                     {
-                        AffiliateId = affiliateId,
+                        UserId = affiliateId,
                         Date = DateTime.UtcNow,
                         Operation = operationType,
                         ReferenceId = referenceId,

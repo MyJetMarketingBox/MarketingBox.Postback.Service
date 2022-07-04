@@ -8,7 +8,8 @@ namespace MarketingBox.Postback.Service.MapperProfiles
     {
         public ReferenceMapperProfile()
         {
-            CreateMap<CreateOrUpdateReferenceRequest, Reference>();
+            CreateMap<CreateReferenceRequest, Reference>();
+            CreateMap<UpdateReferenceRequest, Reference>();
         }
     }
 }

@@ -21,7 +21,7 @@ namespace TestApp
             var factory = new PostbackServiceClientFactory("http://localhost:80");
             var client = factory.GetPostbackService();
 
-            var resp = await client.GetAsync(new ByAffiliateIdRequest() { AffiliateId = 1 });
+            var resp = await client.GetAsync(new ByIdRequest() { PostbackId = 1 });
             if (resp?.Status == ResponseStatus.Ok)
             {
                 var data = resp.Data;

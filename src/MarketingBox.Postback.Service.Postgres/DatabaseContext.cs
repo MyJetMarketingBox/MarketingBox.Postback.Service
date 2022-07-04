@@ -19,7 +19,7 @@ namespace MarketingBox.Postback.Service.Postgres
         public DbSet<EventReferenceLog> EventReferenceLogs { get; set; }
 
         public DbSet<Affiliate> Affiliates { get; set; }
-        
+
         public DatabaseContext(DbContextOptions options) : base(options)
         {
         }
@@ -50,18 +50,18 @@ namespace MarketingBox.Postback.Service.Postgres
             modelBuilder.Entity<Affiliate>().HasKey(e => e.Id);
             modelBuilder.Entity<Affiliate>()
                 .HasOne<Reference>()
-                .WithOne(x=>x.Affiliate)
+                .WithOne(x => x.Affiliate)
                 .HasForeignKey<Reference>(x => x.AffiliateId);
             modelBuilder.Entity<Affiliate>()
                 .HasMany<EventReferenceLog>()
-                .WithOne(x=>x.Affiliate)
+                .WithOne(x => x.Affiliate)
                 .HasForeignKey(x => x.AffiliateId);
             modelBuilder.Entity<Affiliate>()
                 .HasMany<AffiliateReferenceLogEntity>()
-                .WithOne(x=>x.Affiliate)
-                .HasForeignKey(x => x.AffiliateId);
+                .WithOne()
+                .HasForeignKey(x => x.UserId);
         }
-        
+
         private static void SetReference(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Reference>().ToTable(ReferenceTableName);
@@ -73,11 +73,11 @@ namespace MarketingBox.Postback.Service.Postgres
         {
             modelBuilder.Entity<AffiliateReferenceLogEntity>().ToTable(AffiliateReferenceLogTableName);
             modelBuilder.Entity<AffiliateReferenceLogEntity>().HasKey(e => e.Id);
-            modelBuilder.Entity<AffiliateReferenceLogEntity>().HasIndex(e => e.AffiliateId);
+            modelBuilder.Entity<AffiliateReferenceLogEntity>().HasIndex(e => e.UserId);
             modelBuilder.Entity<AffiliateReferenceLogEntity>().HasIndex(e => e.Operation);
             modelBuilder.Entity<AffiliateReferenceLogEntity>().HasIndex(e => e.Date);
         }
-        
+
 
         private static void SetEventReferenceLog(ModelBuilder modelBuilder)
         {
