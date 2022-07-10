@@ -158,7 +158,10 @@ namespace MarketingBox.Postback.Service.Repositories
             {
                 await using var context = _factory.Create();
                 var entityToUpdate =
-                    await context.References.FirstOrDefaultAsync(x => x.Id == request.PostbackId);
+                    await context.References
+                        .Include(x => x.Affiliate)
+                        .AsSplitQuery()
+                        .FirstOrDefaultAsync(x => x.Id == request.PostbackId);
 
                 if (entityToUpdate == null)
                 {
